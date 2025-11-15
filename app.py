@@ -323,7 +323,7 @@ for sec in secondary_stations:
 
 # 显示地图
 st.success("分析完成！")
-st_map = st_folium(m, width=1000, height=700)
+st_map = st_folium(m, width=1000, height=700,returned_objects=[])
 
 map_filename = 'drone_stations_map.html'
 m.save(map_filename)
@@ -347,6 +347,7 @@ st.download_button(
 encoded_html = urllib.parse.quote(html_content)
 data_url = f"data:text/html;charset=utf-8,{encoded_html}"
 st.markdown(f'<a href="{data_url}" target="_blank">在新标签中查看地图（无需下载）</a>', unsafe_allow_html=True)
+
 
 
 
