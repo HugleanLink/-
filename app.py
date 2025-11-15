@@ -324,34 +324,5 @@ st_map = st_folium(m, width=1000, height=700)
 
 st.success("分析完成！")
 
-# 导出 CSV
-csv_data = []
 
-for idx, c in enumerate(circles):
-    csv_data.append({
-        '类型': '圆圈', '区编号': idx+1,
-        '中心纬度': c['center_lat'], '中心经度': c['center_lng'],
-        '半径_km': c['radius_km'], 'POI数量': c['poi_count']
-    })
-for s in primary_stations:
-    csv_data.append({
-        '类型': '一级站', '区编号': s['id'],
-        '中心纬度': s['lat'], '中心经度': s['lng'],
-        '服务圈': s['circle_id']
-    })
-for s in secondary_stations:
-    csv_data.append({
-        '类型': '二级站', '区编号': s['id'],
-        '中心纬度': s['lat'], '中心经度': s['lng'],
-        '服务于': s['primary_id']
-    })
-
-csv_df = pd.DataFrame(csv_data)
-
-st.download_button(
-    "下载结果 CSV",
-    data=csv_df.to_csv(index=False, encoding='utf-8-sig'),
-    file_name=f"{city}_繁华区选址.csv",
-    mime="text/csv"
-)
 
