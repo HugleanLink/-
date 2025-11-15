@@ -323,6 +323,17 @@ for sec in secondary_stations:
 st.success("分析完成！")
 st_map = st_folium(m, width=1000, height=700)
 
+map_filename = 'drone_stations_map.html'
+m.save(map_filename)
+
+# 提供下载按钮
+with open(map_filename, 'rb') as f:
+    st.download_button(
+        label="下载地图HTML文件",
+        data=f,
+        file_name=map_filename,
+        mime="text/html"
+    )
 
 
 
