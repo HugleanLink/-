@@ -320,9 +320,10 @@ for sec in secondary_stations:
             break
 
 # 显示地图
+st.success("分析完成！")
 st_map = st_folium(m, width=1000, height=700)
 
-st.success("分析完成！")
+
 
 
 
