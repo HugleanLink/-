@@ -30,7 +30,7 @@ preset_filter_radius_km = 30.0
 
 # ================== Streamlit UI ==================
 
-st.title("📍 城市繁华区选址系统：网页版（选址2.4）")
+st.title("无人机起降站选址系统")
 st.write("输入城市名，选择你的高德 API Key，然后点击运行。")
 
 city = st.text_input("城市名称（如：西安市）", "西安市")
@@ -57,7 +57,7 @@ def get_city_center(city, api_key):
         return lat, lng
     return None, None
 
-st.info("🔍 正在获取城市中心坐标…")
+st.info("正在获取城市中心坐标…")
 preset_center_lat, preset_center_lng = get_city_center(city, api_key)
 if preset_center_lat is None:
     st.error("无法获取城市中心，请检查城市名或 API Key")
@@ -173,7 +173,7 @@ circles = []
 primary_stations = []
 secondary_stations = []
 
-st.info("📍 正在计算繁华区…")
+st.info("正在计算繁华区…")
 
 # ======= 完全保留你的原始逻辑 =======
 for i, (center_lat, center_lng) in enumerate(cluster_centers):
@@ -276,7 +276,7 @@ for i, (center_lat, center_lng) in enumerate(cluster_centers):
 
 # ==================地图绘制==================
 
-st.info("🗺 正在绘制地图…")
+st.info("正在绘制地图…")
 
 map_center = [all_pois['lat'].mean(), all_pois['lng'].mean()]
 m = folium.Map(
@@ -349,8 +349,9 @@ for s in secondary_stations:
 csv_df = pd.DataFrame(csv_data)
 
 st.download_button(
-    "📥 下载结果 CSV",
+    "下载结果 CSV",
     data=csv_df.to_csv(index=False, encoding='utf-8-sig'),
     file_name=f"{city}_繁华区选址.csv",
     mime="text/csv"
 )
+
