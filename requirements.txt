@@ -4,6 +4,6 @@ requests
 pandas
 numpy
 folium
-base64
 urllib
+
 
