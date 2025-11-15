@@ -5,6 +5,8 @@ import folium
 from streamlit_folium import st_folium
 import numpy as np
 from math import radians, sin, cos, sqrt, atan2, asin, degrees
+import base64  
+import urllib.parse  
 
 # ================== 配置区 ==================
 keywords_default = '商场,购物中心,餐饮服务,中餐厅,西餐厅,咖啡厅,甜品店,酒店,宾馆,酒吧,KTV,电影院,超市,便利店,写字楼,办公楼,地铁站,公交站'
@@ -326,14 +328,26 @@ st_map = st_folium(m, width=1000, height=700)
 map_filename = 'drone_stations_map.html'
 m.save(map_filename)
 
+map_filename = 'drone_stations_map.html'
+m.save(map_filename)
+
+# 读取HTML内容用于下载和链接
+with open(map_filename, 'r', encoding='utf-8') as f:
+    html_content = f.read()
+
 # 提供下载按钮
-with open(map_filename, 'rb') as f:
-    st.download_button(
-        label="下载地图HTML文件",
-        data=f,
-        file_name=map_filename,
-        mime="text/html"
-    )
+st.download_button(
+    label="下载地图HTML文件",
+    data=html_content,
+    file_name=map_filename,
+    mime="text/html"
+)
+
+# 提供直接查看链接（模拟“自动打开”）
+encoded_html = urllib.parse.quote(html_content)
+data_url = f"data:text/html;charset=utf-8,{encoded_html}"
+st.markdown(f'<a href="{data_url}" target="_blank">在新标签中查看地图（无需下载）</a>', unsafe_allow_html=True)
+
 
 
 
