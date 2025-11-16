@@ -281,6 +281,7 @@ for i, (center_lat, center_lng) in enumerate(cluster_centers):
 st.info("正在绘制地图…")
 
 map_center = [all_pois['lat'].mean(), all_pois['lng'].mean()]
+@st.cache
 m = folium.Map(
     location=map_center,
     zoom_start=11,
@@ -347,6 +348,7 @@ st.download_button(
 encoded_html = urllib.parse.quote(html_content)
 data_url = f"data:text/html;charset=utf-8,{encoded_html}"
 st.markdown(f'<a href="{data_url}" target="_blank">在新标签中查看地图（无需下载）</a>', unsafe_allow_html=True)
+
 
 
 
