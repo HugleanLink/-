@@ -19,6 +19,12 @@ if st.button("开始选址分析"):
     st.session_state["run_analysis"] = True
 if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
     st.stop()
+with st.expander("高级配置"):
+    target_radius_km=st.text_input("指定中心繁华区半径","8")
+    num_clusters=st.text_input("中心繁华区个数","1")
+    num_primary_stations_per_circle =st.text_input("负责繁华区的一级站个数","5")
+    drone_range_km=st.text_input("无人机续航(千米)","12")
+    preset_filter_radius_km=st.text_input("超过城市中心坐标多少公里不纳入考虑","30")
 
 
 # 参数
@@ -32,15 +38,10 @@ weights = {
     '地铁站': 0.4, '公交站': 0.4
 }
 max_pages = 40
-target_radius_km = 8.0
-num_clusters = 1
-num_primary_stations_per_circle = 5
 secondary_radius_km = 4.0
 num_secondary_stations = 6
-drone_range_km = 12.0
 ring_buffer_km = 1.0
 outer_buffer_km = 20.0
-preset_filter_radius_km = 30.0
 
 
 # 工具函数
@@ -337,3 +338,4 @@ st.download_button(
     file_name=f"{city}_选址结果.csv",
     mime="text/csv"
 )
+
