@@ -28,16 +28,18 @@ if "run_analysis" not in st.session_state or not st.session_state["run_analysis"
     st.stop()
 if st.button("开始选址分析"):
     st.session_state["run_analysis"] = True
-    if algo_choice == "遗传算法（GA）":
-        st.write("正在运行遗传算法选址流程…")
-        import JonnyVan as ga
-        ga_map, ga_info = ga.run_ga(city, api_key)
-        st.write("遗传算法选址结果：")
-        st_folium(ga_map, width=900, height=600)
-        st.write("算法信息：")
-        st.json(ga_info)
-        st.stop()
-if st.session_state["algo"] == "聚类算法":
+    st.session_state["algo"] = algo_choice
+if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
+    st.stop()
+if st.session_state["algo"] == "遗传算法":
+    st.write("正在运行遗传算法选址流程…")
+    import JonnyVan as ga
+    ga_map, ga_info = ga.run_ga(city, api_key)
+    st.write("遗传算法选址结果：")
+    st_folium(ga_map, width=900, height=600)
+    st.json(ga_info)
+    st.stop()
+if st.session_state["algo"] == "KMeans聚类算法":
     target_radius_km = float(target_radius_km)
     num_clusters = int(num_clusters)
     num_primary_stations_per_circle = int(num_primary_stations_per_circle)
@@ -45,7 +47,6 @@ if st.session_state["algo"] == "聚类算法":
     preset_filter_radius_km = float(preset_filter_radius_km)
     outer_buffer_km = float(outer_buffer_km)
     secondary_radius_km = float(secondary_radius_km)
-
 
     # 参数
     keywords = '商场,购物中心,餐饮服务,中餐厅,西餐厅,咖啡厅,甜品店,酒店,宾馆,酒吧,KTV,电影院,超市,便利店,写字楼,办公楼,地铁站,公交站'
@@ -349,4 +350,3 @@ if st.session_state["algo"] == "聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
-
