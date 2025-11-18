@@ -334,7 +334,8 @@ for s in secondary_stations:
             break
 
 # 显示地图
-st_folium(m, width=900, height=600)
+st_folium(m, width=900, height=600, returned_objects=[])
+
 
 # ======================================
 # 导出 CSV
@@ -379,13 +380,16 @@ csv_df.to_csv(csv_buf, index=False, encoding="utf-8-sig")
 
 st.write("下载结果")
 
-# 下载 HTML
+html_str = m.get_root().render()
+html_bytes = html_str.encode("utf-8")
+
 st.download_button(
     "下载 HTML 地图文件",
-    data=m.get_root().render(),
+    data=html_bytes,
     file_name=f"{city}_选址地图.html",
     mime="text/html"
 )
+
 
 # 下载 CSV
 st.download_button(
@@ -394,3 +398,4 @@ st.download_button(
     file_name=f"{city}_选址结果.csv",
     mime="text/csv"
 )
+
