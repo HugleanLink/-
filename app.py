@@ -13,6 +13,7 @@ import io
 st.set_page_config(page_title="选址", layout="wide")
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德 API Key，然后点击“开始选址分析”。")
+algo_choice = st.selectbox("选择选址算法",["KMeans聚类算法（默认）", "遗传算法"])
 city = st.text_input("城市名称（例如：武汉市）")
 api_key = st.text_input("输入高德 API Key", type="password")
 with st.expander("高级配置"):
@@ -25,15 +26,25 @@ with st.expander("高级配置"):
     secondary_radius_km=st.text_input("二级站的最远辐射距离(千米)","4")
 if st.button("开始选址分析"):
     st.session_state["run_analysis"] = True
-if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
-    st.stop()
-target_radius_km = float(target_radius_km)
-num_clusters = int(num_clusters)
-num_primary_stations_per_circle = int(num_primary_stations_per_circle)
-drone_range_km = float(drone_range_km)
-preset_filter_radius_km = float(preset_filter_radius_km)
-outer_buffer_km = float(outer_buffer_km)
-secondary_radius_km = float(secondary_radius_km)
+# 如果用户选择 GA，直接跳到 GA 分支，不运行你的 KMeans 流程
+if algo_choice == "遗传算法（GA）":
+    st.write("正在运行遗传算法选址流程…")
+
+    # 调用 GA 文件（你的组员的程序）
+    import JonnyVan as ga_module
+
+    # 运行 GA 脚本（我们加一个入口函数）
+    ga_map, ga_info = ga_module.run_ga(city, api_key)
+
+    # 显示 GA 地图
+    st.write("遗传算法选址结果：")
+    st_folium(ga_map, width=900, height=600)
+
+    # 可选：显示 GA 输出的文本信息
+    st.write("算法信息：")
+    st.json(ga_info)
+
+    st.stop()  # 不再继续往下执行你原来的 KMeans 分支
 
 
 # 参数
@@ -345,6 +356,7 @@ st.download_button(
     file_name=f"{city}_选址结果.csv",
     mime="text/csv"
 )
+
 
 
 
