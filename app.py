@@ -8,14 +8,16 @@ from sklearn.cluster import KMeans
 from math import radians, sin, cos, sqrt, atan2, asin, degrees
 import io
 
-
 # streamlit页面设置
 st.set_page_config(page_title="选址", layout="wide")
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德 API Key，然后点击“开始选址分析”。")
+
+# ======== UI 控件永远先渲染 ========
 algo_choice = st.selectbox("选择选址算法(若不选择，自动决定)",["KMeans聚类算法", "遗传算法"])
 city = st.text_input("城市名称（例如：武汉市）")
 api_key = st.text_input("输入高德 API Key", type="password")
+
 with st.expander("高级配置"):
     target_radius_km=st.text_input("指定中心繁华区半径","8")
     num_clusters=st.text_input("中心繁华区个数","1")
@@ -24,21 +26,32 @@ with st.expander("高级配置"):
     preset_filter_radius_km=st.text_input("超过城市中心坐标多少公里不纳入考虑","30")
     outer_buffer_km=st.text_input("二级站的覆盖环带宽度(千米)","20")
     secondary_radius_km=st.text_input("二级站的最远辐射距离(千米)","4")
-if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
-    st.stop()
+
+# 点击按钮 → 设置 run_analysis
 if st.button("开始选址分析"):
     st.session_state["run_analysis"] = True
     st.session_state["algo"] = algo_choice
+
+# 如果没按按钮 → 不继续执行计算逻辑
 if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
     st.stop()
+
+
+# ================= GA 分支 =================
 if st.session_state["algo"] == "遗传算法":
     st.write("正在运行遗传算法选址流程…")
     import JonnyVan as ga
+
     ga_map, ga_info = ga.run_ga(city, api_key)
+
     st.write("遗传算法选址结果：")
     st_folium(ga_map, width=900, height=600)
     st.json(ga_info)
-    st.stop()
+
+    st.stop()  # ← GA 必须阻止继续跑 KMeans
+
+
+# ================= KMeans 分支 =================
 if st.session_state["algo"] == "KMeans聚类算法":
     target_radius_km = float(target_radius_km)
     num_clusters = int(num_clusters)
@@ -350,3 +363,4 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
