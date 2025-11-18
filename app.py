@@ -26,7 +26,7 @@ with st.expander("高级配置"):
     secondary_radius_km=st.text_input("二级站的最远辐射距离(千米)","4")
 if st.button("开始选址分析"):
     st.session_state["run_analysis"] = True
-    if algo_choice == "遗传算法（GA）":
+    if algo_choice == "遗传算法":
         st.write("正在运行遗传算法选址流程…")
         import JonnyVan as ga
         ga_map, ga_info = ga.run_ga(city, api_key)
@@ -355,6 +355,7 @@ st.download_button(
     file_name=f"{city}_选址结果.csv",
     mime="text/csv"
 )
+
 
 
 
