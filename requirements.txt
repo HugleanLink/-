@@ -1,11 +1,7 @@
 streamlit
 streamlit-folium
-requests
 pandas
 numpy
 folium
-sklearn.cluster
-
-
-
-
+scikit-learn
+requests
