@@ -34,6 +34,22 @@ if city.strip() == "" or api_key.strip() == "":
     st.error("城市名称和 API Key 不能为空。")
     st.stop()
 
+# --- 按钮 ---
+if st.button("开始选址分析"):
+    st.session_state["run_analysis"] = True
+
+
+# --- 只有在 run_analysis=True 才运行下面的全部逻辑 ---
+if "run_analysis" not in st.session_state:
+    st.stop()
+
+if not st.session_state["run_analysis"]:
+    st.stop()
+
+# =====================
+# （从这里开始放所有“城市中心 → 获取POI → 聚类 → 绘图 → 下载”逻辑）
+# =====================
+
 
 # ======================================
 # 固定参数（与你原始脚本一致）
@@ -422,6 +438,7 @@ st.download_button(
     file_name=f"{city}_选址结果.csv",
     mime="text/csv"
 )
+
 
 
 
