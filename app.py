@@ -15,16 +15,17 @@ st.title("起降站选址系统")
 st.write("请输入城市名称和高德 API Key，然后点击“开始选址分析”。")
 city = st.text_input("城市名称（例如：武汉市）")
 api_key = st.text_input("输入高德 API Key", type="password")
-if st.button("开始选址分析"):
-    st.session_state["run_analysis"] = True
-if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
-    st.stop()
 with st.expander("高级配置"):
     target_radius_km=st.text_input("指定中心繁华区半径","8")
     num_clusters=st.text_input("中心繁华区个数","1")
     num_primary_stations_per_circle =st.text_input("负责繁华区的一级站个数","5")
     drone_range_km=st.text_input("无人机续航(千米)","12")
     preset_filter_radius_km=st.text_input("超过城市中心坐标多少公里不纳入考虑","30")
+if st.button("开始选址分析"):
+    st.session_state["run_analysis"] = True
+if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
+    st.stop()
+
 
 
 # 参数
@@ -338,4 +339,5 @@ st.download_button(
     file_name=f"{city}_选址结果.csv",
     mime="text/csv"
 )
+
 
