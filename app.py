@@ -27,6 +27,13 @@ if st.button("开始选址分析"):
     st.session_state["run_analysis"] = True
 if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
     st.stop()
+target_radius_km = float(target_radius_km)
+num_clusters = int(num_clusters)
+num_primary_stations_per_circle = int(num_primary_stations_per_circle)
+drone_range_km = float(drone_range_km)
+preset_filter_radius_km = float(preset_filter_radius_km)
+outer_buffer_km = float(outer_buffer_km)
+secondary_radius_km = float(secondary_radius_km)
 
 
 # 参数
@@ -338,6 +345,7 @@ st.download_button(
     file_name=f"{city}_选址结果.csv",
     mime="text/csv"
 )
+
 
 
 
