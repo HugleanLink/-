@@ -28,8 +28,8 @@ if st.button("开始选址分析"):
     st.session_state["run_analysis"] = True
     if algo_choice == "遗传算法（GA）":
         st.write("正在运行遗传算法选址流程…")
-        import JonnyVan as ga_module
-        ga_map, ga_info = ga_module.run_ga(city, api_key)
+        import JonnyVan as ga
+        ga_map, ga_info = ga.run_ga(city, api_key)
         st.write("遗传算法选址结果：")
         st_folium(ga_map, width=900, height=600)
         st.write("算法信息：")
@@ -355,6 +355,7 @@ st.download_button(
     file_name=f"{city}_选址结果.csv",
     mime="text/csv"
 )
+
 
 
 
