@@ -44,7 +44,7 @@ if "run_analysis" not in st.session_state or not st.session_state["run_analysis"
 # ======================
 #         GA 部分
 # ======================
-if st.session_state["algo"] == "遗传算法（GA）":
+if st.session_state["algo"] == "遗传算法":
     st.write("正在运行遗传算法…")
     import ga_module as ga
 
@@ -57,7 +57,7 @@ if st.session_state["algo"] == "遗传算法（GA）":
     st_folium(ga_map, width=900, height=600)
 
     # ---- 信息折叠显示，不会遮住地图 ----
-    with st.expander("算法信息（GA）"):
+    with st.expander("算法信息"):
         st.json(ga_info)
 
     st.stop()    # ← 必须有！防止继续运行下方的 KMeans
@@ -378,5 +378,6 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
 
