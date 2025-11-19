@@ -12,12 +12,9 @@ import io
 st.set_page_config(page_title="选址", layout="wide")
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德 API Key，然后点击“开始选址分析”。")
-
-# ======== UI 控件永远先渲染 ========
 algo_choice = st.selectbox("选择选址算法(若不选择，自动决定)",["KMeans聚类算法", "遗传算法"])
 city = st.text_input("城市名称（例如：武汉市）")
 api_key = st.text_input("输入高德 API Key", type="password")
-
 with st.expander("高级配置"):
     target_radius_km=st.text_input("指定中心繁华区半径","8")
     num_clusters=st.text_input("中心繁华区个数","1")
@@ -26,47 +23,24 @@ with st.expander("高级配置"):
     preset_filter_radius_km=st.text_input("超过城市中心坐标多少公里不纳入考虑","30")
     outer_buffer_km=st.text_input("二级站的覆盖环带宽度(千米)","20")
     secondary_radius_km=st.text_input("二级站的最远辐射距离(千米)","4")
-
-# 点击按钮 → 设置 run_analysis
 if st.button("开始选址分析"):
     st.session_state["algo"] = algo_choice
     st.session_state["city"] = city
     st.session_state["api_key"] = api_key
     st.session_state["run_analysis"] = True
-
-# ----------------------
-# 如果没有点击按钮，什么都不做
-# ----------------------
 if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
     st.stop()
-
-
-# ======================
-#         GA 部分
-# ======================
 if st.session_state["algo"] == "遗传算法":
     st.write("正在运行遗传算法…")
     import JonnyVan as ga
-
     ga_map, ga_info = ga.run_ga(
         st.session_state["city"],
         st.session_state["api_key"]
     )
-
-    # ---- 先渲染地图 ----
     st_folium(ga_map, width=900, height=600)
-
-    # ---- 信息折叠显示，不会遮住地图 ----
     with st.expander("算法信息"):
         st.json(ga_info)
-
-    st.stop()    # ← 必须有！防止继续运行下方的 KMeans
-
-
-
-
-
-# ================= KMeans 分支 =================
+    st.stop()
 if st.session_state["algo"] == "KMeans聚类算法":
     target_radius_km = float(target_radius_km)
     num_clusters = int(num_clusters)
@@ -76,6 +50,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     outer_buffer_km = float(outer_buffer_km)
     secondary_radius_km = float(secondary_radius_km)
 
+    
     # 参数
     keywords = '商场,购物中心,餐饮服务,中餐厅,西餐厅,咖啡厅,甜品店,酒店,宾馆,酒吧,KTV,电影院,超市,便利店,写字楼,办公楼,地铁站,公交站'
     weights = {
@@ -378,6 +353,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
 
 
