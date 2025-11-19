@@ -8,17 +8,21 @@ from sklearn.cluster import KMeans
 from math import radians, sin, cos, sqrt, atan2, asin, degrees
 import io
 
-# streamlit页面设置
 st.set_page_config(page_title="选址", layout="wide")
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德 API Key，然后点击“开始选址分析”。")
-algo_choice = st.selectbox("选择选址算法(若不选择，自动决定)",["KMeans聚类算法", "遗传算法"])
+SPECIAL_GA_CITIES = ["西宁市"]  
+algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",["KMeans聚类算法", "遗传算法", "不选择"])
 city = st.text_input("城市名称（例如：武汉市）")
-if city == "西宁市":
-    algo_choice = "遗传算法"
-    st.info("已自动为西宁市选择遗传算法")
+if algo_choice == "不选择":
+    if any(c in city for c in SPECIAL_GA_CITIES):
+        st.session_state["algo"] = "遗传算法"
+        st.info(f"已为{city}自动选择遗传算法")
+    else:
+        st.session_state["algo"] = "KMeans聚类算法"
+        st.info(f"已为{city}自动选择KMeans聚类算法")
 else:
-    algo_choice = st.selectbox("选择算法", algo_choice)
+    st.session_state["algo"] = algo_choice
 api_key = st.text_input("输入高德 API Key", type="password")
 with st.expander("高级配置"):
     target_radius_km=st.text_input("指定中心繁华区半径","8")
@@ -38,12 +42,9 @@ if "run_analysis" not in st.session_state or not st.session_state["run_analysis"
 if st.session_state["algo"] == "遗传算法":
     st.write("正在运行遗传算法…")
     import JonnyVan as ga
-    ga_map, ga_info = ga.run_ga(
-        st.session_state["city"],
-        st.session_state["api_key"]
-    )
+    ga_map, ga_info = ga.run_ga(st.session_state["city"],st.session_state["api_key"])
     st_folium(ga_map, width=900, height=600)
-    with st.expander("算法信息"):
+    with st.expander("算法信息（GA）"):
         st.json(ga_info)
     st.stop()
 if st.session_state["algo"] == "KMeans聚类算法":
@@ -358,6 +359,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
 
 
