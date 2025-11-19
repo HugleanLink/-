@@ -18,7 +18,7 @@ if city == "西宁市":
     algo_choice = "遗传算法"
     st.info("已自动为西宁市选择遗传算法")
 else:
-    algo_choice = st.selectbox("选择算法", algo_list)
+    algo_choice = st.selectbox("选择算法", algo_choice)
 api_key = st.text_input("输入高德 API Key", type="password")
 with st.expander("高级配置"):
     target_radius_km=st.text_input("指定中心繁华区半径","8")
@@ -358,6 +358,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
 
 
