@@ -64,7 +64,7 @@ if st.button("开始选址分析"):
                     from scipy.spatial import ConvexHull
                     hull = ConvexHull(pois[['lng', 'lat']])
                     compactness = hull.area / hull.volume
-                    if compactness > 4:
+                    if compactness > 8:
                         return "遗传算法", "城市形态不规则，自动选择 GA"
                 except:
                     pass
@@ -403,6 +403,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
 
 
