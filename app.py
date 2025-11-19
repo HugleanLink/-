@@ -29,26 +29,41 @@ with st.expander("高级配置"):
 
 # 点击按钮 → 设置 run_analysis
 if st.button("开始选址分析"):
-    st.session_state["run_analysis"] = True
     st.session_state["algo"] = algo_choice
+    st.session_state["city"] = city
+    st.session_state["api_key"] = api_key
+    st.session_state["run_analysis"] = True
 
-# 如果没按按钮 → 不继续执行计算逻辑
+# ----------------------
+# 如果没有点击按钮，什么都不做
+# ----------------------
 if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
     st.stop()
 
 
-# ================= GA 分支 =================
-if st.session_state["algo"] == "遗传算法":
-    st.write("正在运行遗传算法选址流程…")
-    import JonnyVan as ga
+# ======================
+#         GA 部分
+# ======================
+if st.session_state["algo"] == "遗传算法（GA）":
+    st.write("正在运行遗传算法…")
+    import ga_module as ga
 
-    ga_map, ga_info = ga.run_ga(city, api_key)
+    ga_map, ga_info = ga.run_ga(
+        st.session_state["city"],
+        st.session_state["api_key"]
+    )
 
-    st.write("遗传算法选址结果：")
+    # ---- 先渲染地图 ----
     st_folium(ga_map, width=900, height=600)
-    st.json(ga_info)
 
-    st.stop()  # ← GA 必须阻止继续跑 KMeans
+    # ---- 信息折叠显示，不会遮住地图 ----
+    with st.expander("算法信息（GA）"):
+        st.json(ga_info)
+
+    st.stop()    # ← 必须有！防止继续运行下方的 KMeans
+
+
+
 
 
 # ================= KMeans 分支 =================
@@ -363,4 +378,5 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
