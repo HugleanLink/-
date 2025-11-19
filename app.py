@@ -10,30 +10,32 @@ import io
 
 st.set_page_config(page_title="选址", layout="wide")
 st.title("起降站选址系统")
-st.write("请输入城市名称和高德 API Key，然后点击“开始选址分析”。")
-SPECIAL_GA_CITIES = ["西宁市"]  
+st.write("请输入城市名称和高德API Key，然后点击“开始选址分析”。")
+SPECIAL_GA_CITIES = ["西宁市"]
 algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",["KMeans聚类算法", "遗传算法", "不选择"])
 city = st.text_input("城市名称（例如：武汉市）")
-if algo_choice == "不选择":
-    if any(c in city for c in SPECIAL_GA_CITIES):
-        st.session_state["algo"] = "遗传算法"
-        st.info(f"已为{city}自动选择遗传算法")
-    else:
-        st.session_state["algo"] = "KMeans聚类算法"
-        st.info(f"已为{city}自动选择KMeans聚类算法")
-else:
-    st.session_state["algo"] = algo_choice
-api_key = st.text_input("输入高德 API Key", type="password")
+api_key = st.text_input("输入高德API Key", type="password")
 with st.expander("高级配置"):
-    target_radius_km=st.text_input("指定中心繁华区半径","8")
-    num_clusters=st.text_input("中心繁华区个数","1")
-    num_primary_stations_per_circle =st.text_input("负责繁华区的一级站个数","5")
-    drone_range_km=st.text_input("无人机续航(千米)","12")
-    preset_filter_radius_km=st.text_input("超过城市中心坐标多少公里不纳入考虑","30")
-    outer_buffer_km=st.text_input("二级站的覆盖环带宽度(千米)","20")
-    secondary_radius_km=st.text_input("二级站的最远辐射距离(千米)","4")
+    target_radius_km = st.text_input("指定中心繁华区半径", "8")
+    num_clusters = st.text_input("中心繁华区个数", "1")
+    num_primary_stations_per_circle = st.text_input("负责繁华区的一级站个数", "5")
+    drone_range_km = st.text_input("无人机续航(千米)", "12")
+    preset_filter_radius_km = st.text_input("超过城市中心坐标多少公里不纳入考虑", "30")
+    outer_buffer_km = st.text_input("二级站的覆盖环带宽度(千米)", "20")
+    secondary_radius_km = st.text_input("二级站的最远辐射距离(千米)", "4")
 if st.button("开始选址分析"):
-    st.session_state["algo"] = algo_choice
+    if city.strip() == "":
+        st.warning("请先输入城市名称。")
+        st.stop()
+    if algo_choice == "不选择":
+        if any(c in city for c in SPECIAL_GA_CITIES):
+            st.session_state["algo"] = "遗传算法"
+            st.info(f"已为 {city} 自动选择遗传算法")
+        else:
+            st.session_state["algo"] = "KMeans聚类算法"
+            st.info(f"已为 {city} 自动选择KMeans聚类算法")
+    else:
+        st.session_state["algo"] = algo_choice
     st.session_state["city"] = city
     st.session_state["api_key"] = api_key
     st.session_state["run_analysis"] = True
@@ -42,12 +44,13 @@ if "run_analysis" not in st.session_state or not st.session_state["run_analysis"
 if st.session_state["algo"] == "遗传算法":
     st.write("正在运行遗传算法…")
     import JonnyVan as ga
-    ga_map, ga_info = ga.run_ga(st.session_state["city"],st.session_state["api_key"])
+    ga_map, ga_info = ga.run_ga(st.session_state["city"], st.session_state["api_key"])
     st_folium(ga_map, width=900, height=600)
-    with st.expander("算法信息（GA）"):
+    with st.expander("算法信息"):
         st.json(ga_info)
     st.stop()
 if st.session_state["algo"] == "KMeans聚类算法":
+    # 类型转换
     target_radius_km = float(target_radius_km)
     num_clusters = int(num_clusters)
     num_primary_stations_per_circle = int(num_primary_stations_per_circle)
@@ -55,7 +58,6 @@ if st.session_state["algo"] == "KMeans聚类算法":
     preset_filter_radius_km = float(preset_filter_radius_km)
     outer_buffer_km = float(outer_buffer_km)
     secondary_radius_km = float(secondary_radius_km)
-
     
     # 参数
     keywords = '商场,购物中心,餐饮服务,中餐厅,西餐厅,咖啡厅,甜品店,酒店,宾馆,酒吧,KTV,电影院,超市,便利店,写字楼,办公楼,地铁站,公交站'
@@ -359,6 +361,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
 
 
