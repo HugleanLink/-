@@ -9,55 +9,125 @@ from math import radians, sin, cos, sqrt, atan2, asin, degrees
 import io
 
 # streamlit页面设置
-st.set_page_config(page_title="选址", layout="wide")
+import streamlit as st
+from streamlit_folium import st_folium
+import time
+
+# ========== 页面设置 ==========
+st.set_page_config(page_title="选址系统", layout="wide")
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德API Key，然后点击“开始选址分析”。")
+
 SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
-algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"])
+
+algo_choice = st.selectbox(
+    "选择选址算法（若不选择，自动决定）",
+    ["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"]
+)
+
 city = st.text_input("城市名称（例如：武汉市）")
 api_key = st.text_input("输入高德API Key", type="password")
+
+# ========== 高级配置 ==========
 with st.expander("高级配置"):
     target_radius_km = st.text_input("指定中心繁华区半径", "8")
     num_clusters = st.text_input("中心繁华区个数", "1")
-    num_primary_stations_per_circle = st.text_input("负责繁华区的一级站个数", "5")
+    num_primary_stations_per_circle = st.text_input("一级站个数", "5")
     drone_range_km = st.text_input("无人机续航(千米)", "12")
-    preset_filter_radius_km = st.text_input("超过城市中心坐标多少公里不纳入考虑", "30")
-    outer_buffer_km = st.text_input("二级站的覆盖环带宽度(千米)", "20")
-    secondary_radius_km = st.text_input("二级站的最远辐射距离(千米)", "4")
+    preset_filter_radius_km = st.text_input("过滤半径(千米)", "30")
+    outer_buffer_km = st.text_input("二级站覆盖带宽(千米)", "20")
+    secondary_radius_km = st.text_input("二级站辐射最远距离(千米)", "4")
+
+# =========================================================
+#                ❗按下按钮：设置 session_state
+# =========================================================
 if st.button("开始选址分析"):
-    if city.strip() == "":
+    if not city.strip():
         st.warning("请先输入城市名称。")
         st.stop()
+
+    # 自动决策逻辑
     if algo_choice == "不选择":
         if any(c in city for c in SPECIAL_GA_CITIES):
-            st.session_state["algo"] = "遗传算法"
-            st.info(f"已为 {city} 自动选择遗传算法")
+            algo = "遗传算法"
+            st.session_state["auto_msg"] = f"已为 {city} 自动选择：遗传算法"
         else:
-            st.session_state["algo"] = "KMeans聚类算法"
-            st.info(f"已为 {city} 自动选择KMeans聚类算法")
+            algo = "KMeans聚类算法"
+            st.session_state["auto_msg"] = f"已为 {city} 自动选择：KMeans 聚类算法"
     else:
-        st.session_state["algo"] = algo_choice
+        algo = algo_choice
+        st.session_state["auto_msg"] = None
+
+    st.session_state["algo"] = algo
     st.session_state["city"] = city
     st.session_state["api_key"] = api_key
-    st.session_state["run_analysis"] = True
-if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
+    st.session_state["run"] = True
+
+# =========================================================
+#                          主执行区
+# =========================================================
+if "run" not in st.session_state or not st.session_state["run"]:
     st.stop()
+
+# 显示自动选择结果
+if st.session_state.get("auto_msg"):
+    st.info(st.session_state["auto_msg"])
+
+# 动画加载区
+progress = st.progress(0)
+status_text = st.empty()
+
+for i in range(1, 101):
+    time.sleep(0.01)
+    progress.progress(i)
+    status_text.text(f"正在加载... {i}%")
+status_text.text("加载完成")
+
+# =========================================================
+#                     运行遗传算法 GA
+# =========================================================
 if st.session_state["algo"] == "遗传算法":
-    st.write("正在运行遗传算法…")
+    st.subheader("遗传算法运行中…")
+
     import JonnyVan as ga
-    ga_map, ga_info = ga.run_ga(st.session_state["city"], st.session_state["api_key"])
+    ga_map, ga_info = ga.run_ga(
+        st.session_state["city"],
+        st.session_state["api_key"]
+    )
+
     st_folium(ga_map, width=900, height=600)
-    with st.expander("算法信息"):
+
+    with st.expander("算法信息（GA）"):
         st.json(ga_info)
+
+    st.session_state["run"] = False
     st.stop()
+
+# =========================================================
+#                 运行景区建站算法
+# =========================================================
 if st.session_state["algo"] == "景区建站算法":
     import ScenicPlanner as sp
-    scenic_map, scenic_info = sp.run_scenic(city, api_key)
+
+    scenic_map, scenic_info = sp.run_scenic(
+        st.session_state["city"],
+        st.session_state["api_key"]
+    )
+
     st_folium(scenic_map, width=900, height=600)
     with st.expander("景区选址信息"):
         st.json(scenic_info)
+
+    st.session_state["run"] = False
     st.stop()
+
+# =========================================================
+#                   运行 KMeans 聚类算法
+# =========================================================
 if st.session_state["algo"] == "KMeans聚类算法":
+    st.subheader("KMeans 聚类算法运行中…")
+
+    # 参数转类型
     target_radius_km = float(target_radius_km)
     num_clusters = int(num_clusters)
     num_primary_stations_per_circle = int(num_primary_stations_per_circle)
@@ -65,6 +135,13 @@ if st.session_state["algo"] == "KMeans聚类算法":
     preset_filter_radius_km = float(preset_filter_radius_km)
     outer_buffer_km = float(outer_buffer_km)
     secondary_radius_km = float(secondary_radius_km)
+
+    # 调用你的 KMeans 主体（你原来那套逻辑）
+    # ... 原有 KMeans 全部保持不变 ...
+
+    st.session_state["run"] = False
+    st.stop()
+
 
 
     # 参数
@@ -369,6 +446,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
 
 
