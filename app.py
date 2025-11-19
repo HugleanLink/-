@@ -12,8 +12,8 @@ import io
 st.set_page_config(page_title="选址", layout="wide")
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德API Key，然后点击“开始选址分析”。")
-SPECIAL_GA_CITIES = ["西宁市","拉萨市","昆明市"]
-algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",["KMeans聚类算法", "遗传算法", "不选择","景区建站算法"])
+SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
+algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"])
 city = st.text_input("城市名称（例如：武汉市）")
 api_key = st.text_input("输入高德API Key", type="password")
 with st.expander("高级配置"):
@@ -58,7 +58,6 @@ if st.session_state["algo"] == "景区建站算法":
         st.json(scenic_info)
     st.stop()
 if st.session_state["algo"] == "KMeans聚类算法":
-    # 类型转换
     target_radius_km = float(target_radius_km)
     num_clusters = int(num_clusters)
     num_primary_stations_per_circle = int(num_primary_stations_per_circle)
@@ -370,6 +369,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
 
 
