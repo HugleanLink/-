@@ -277,16 +277,17 @@ def run_ga(city_name, api_key, keywords=DEFAULT_KEYWORDS):
     location=map_center,
     zoom_start=12,
     tiles=None
-    )
+)
 
-# 高德地图（矢量）
-    folium.TileLayer(
-        tiles="https://webrd02.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}",
-        attr="高德地图",
-        name="高德矢量图",
-        overlay=False,
-        control=True
-    ).add_to(m)
+# 作为底图，禁止 control 和 overlay
+folium.TileLayer(
+    tiles="https://webrd02.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}",
+    attr="高德地图(AMap)",
+    name="AMap Base",
+    overlay=False,
+    control=False
+).add_to(m)
+
 
     # POI
     for _, r in poi_df.sample(min(len(poi_df), 300)).iterrows():
@@ -297,6 +298,16 @@ def run_ga(city_name, api_key, keywords=DEFAULT_KEYWORDS):
     for _, r in level1_sites.iterrows():
         folium.CircleMarker([r["lat"], r["lng"]], radius=7,
                             color="red", fill=True).add_to(m)
+        if len(level1_sites) >= 3:
+            pts = level1_sites[["lng", "lat"]].values
+            hull = ConvexHull(pts)
+            hull_pts = pts[hull.vertices]
+    
+    # 转换为 (lat, lng) 顺序
+    path = [(p[1], p[0]) for p in hull_pts]
+    path.append(path[0])  # 闭合
+    
+    folium.PolyLine(path, color="red", weight=3).add_to(m)
 
     # 二级站
     for _, r in final_l2.iterrows():
@@ -314,4 +325,5 @@ def run_ga(city_name, api_key, keywords=DEFAULT_KEYWORDS):
     }
 
     return m, info
+
 
