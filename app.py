@@ -49,8 +49,8 @@ if st.session_state["algo"] == "遗传算法":
     import JonnyVan as ga
 
     ga_map, ga_info = ga.run_ga(
-        st.session_state["city"],
-        st.session_state["api_key"]
+        st.session_state["CITY"],
+        st.session_state["API_KEY"]
     )
 
     # ---- 先渲染地图 ----
@@ -378,6 +378,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
 
 
