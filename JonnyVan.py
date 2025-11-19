@@ -273,7 +273,20 @@ def run_ga(city_name, api_key, keywords=DEFAULT_KEYWORDS):
     map_center = [lat_mean, lng_mean]
 
     # -------- 7. 绘 地 图 --------
-    m = folium.Map(location=map_center, zoom_start=11)
+    m = folium.Map(
+    location=map_center,
+    zoom_start=12,
+    tiles=None
+    )
+
+# 高德地图（矢量）
+    folium.TileLayer(
+        tiles="https://webrd02.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}",
+        attr="高德地图",
+        name="高德矢量图",
+        overlay=False,
+        control=True
+    ).add_to(m)
 
     # POI
     for _, r in poi_df.sample(min(len(poi_df), 300)).iterrows():
@@ -301,3 +314,4 @@ def run_ga(city_name, api_key, keywords=DEFAULT_KEYWORDS):
     }
 
     return m, info
+
