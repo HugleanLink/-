@@ -8,6 +8,7 @@ from sklearn.cluster import KMeans
 from math import radians, sin, cos, sqrt, atan2, asin, degrees
 import io
 
+# streamlit页面设置
 st.set_page_config(page_title="选址", layout="wide")
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德API Key，然后点击“开始选址分析”。")
@@ -32,56 +33,13 @@ if st.button("开始选址分析"):
             st.session_state["algo"] = "遗传算法"
             st.info(f"已为 {city} 自动选择遗传算法")
         else:
-            try:
-                import requests
-                url = "https://restapi.amap.com/v3/place/text"
-                params = {"keywords": "商场","city": city, "output": "json","offset": 50,"page": 1,"key": api_key}
-                raw = requests.get(url, params=params).json()
-                pois = []
-                for p in raw.get("pois", []):
-                    if p.get("location"):
-                        lng, lat = map(float, p["location"].split(","))
-                        pois.append({"lng": lng, "lat": lat})
-                import pandas as pd
-                pois = pd.DataFrame(pois)
-            except:
-                pois = pd.DataFrame(columns=["lng", "lat"])
-            def auto_decide_algorithm(pois):
-                if pois.empty:
-                    return "KMeans聚类算法", "POI过少，默认选择 KMeans"
-                count = len(pois)
-                if count > 6000:
-                    return "KMeans聚类算法", "POI量大，自动选择 KMeans"
-                try:
-                    from sklearn.cluster import KMeans
-                    tmp = KMeans(n_clusters=3).fit_predict(pois[['lat', 'lng']])
-                    sizes = pois.groupby(tmp).size()
-                    if sizes.max() / sizes.min() > 8:
-                        return "遗传算法", "城市多中心规模差异大，自动选择 GA"
-                except:
-                    pass
-                try:
-                    from scipy.spatial import ConvexHull
-                    hull = ConvexHull(pois[['lng', 'lat']])
-                    compactness = hull.area / hull.volume
-                    if compactness > 8:
-                        return "遗传算法", "城市形态不规则，自动选择 GA"
-                except:
-                    pass
-                return "KMeans聚类算法", "数据结构规则，自动选择 KMeans"
-            algo, reason = auto_decide_algorithm(pois)
-            st.session_state["algo"] = algo
-            st.info(f"为 {city} 自动选择：{algo}（原因：{reason}）")
+            st.session_state["algo"] = "KMeans聚类算法"
+            st.info(f"已为 {city} 自动选择KMeans聚类算法")
     else:
         st.session_state["algo"] = algo_choice
     st.session_state["city"] = city
     st.session_state["api_key"] = api_key
     st.session_state["run_analysis"] = True
-else:
-    st.session_state["algo"] = algo_choice
-st.session_state["city"] = city
-st.session_state["api_key"] = api_key
-st.session_state["run_analysis"] = True
 if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
     st.stop()
 if st.session_state["algo"] == "遗传算法":
@@ -92,7 +50,15 @@ if st.session_state["algo"] == "遗传算法":
     with st.expander("算法信息"):
         st.json(ga_info)
     st.stop()
+if st.session_state["algo"] == "景区建站算法":
+    import ScenicPlanner as sp
+    scenic_map, scenic_info = sp.run_scenic(city, api_key)
+    st_folium(scenic_map, width=900, height=600)
+    with st.expander("景区选址信息"):
+        st.json(scenic_info)
+    st.stop()
 if st.session_state["algo"] == "KMeans聚类算法":
+    # 类型转换
     target_radius_km = float(target_radius_km)
     num_clusters = int(num_clusters)
     num_primary_stations_per_circle = int(num_primary_stations_per_circle)
@@ -100,7 +66,9 @@ if st.session_state["algo"] == "KMeans聚类算法":
     preset_filter_radius_km = float(preset_filter_radius_km)
     outer_buffer_km = float(outer_buffer_km)
     secondary_radius_km = float(secondary_radius_km)
-    
+
+
+
     # 参数
     keywords = '商场,购物中心,餐饮服务,中餐厅,西餐厅,咖啡厅,甜品店,酒店,宾馆,酒吧,KTV,电影院,超市,便利店,写字楼,办公楼,地铁站,公交站'
     weights = {
@@ -403,18 +371,3 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
