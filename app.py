@@ -40,6 +40,8 @@ if st.button("开始选址分析"):
     st.session_state["city"] = city
     st.session_state["api_key"] = api_key
     st.session_state["run_analysis"] = True
+if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
+    st.stop()
 if st.session_state["algo"] == "遗传算法":
     st.write("正在运行遗传算法…")
     import JonnyVan as ga
@@ -369,4 +371,5 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
