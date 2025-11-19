@@ -12,7 +12,12 @@ import io
 st.set_page_config(page_title="选址", layout="wide")
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德 API Key，然后点击“开始选址分析”。")
-algo_choice = st.selectbox("选择选址算法(若不选择，自动决定)",["KMeans聚类算法", "遗传算法"])
+algo_list = ["KMeans聚类算法", "遗传算法"]
+if city == "西宁市":
+    algo_choice = "遗传算法"
+    st.info("已自动为西宁市选择遗传算法")
+else:
+    algo_choice = st.selectbox("选择算法", algo_list)
 city = st.text_input("城市名称（例如：武汉市）")
 api_key = st.text_input("输入高德 API Key", type="password")
 with st.expander("高级配置"):
@@ -353,6 +358,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
 
 
