@@ -50,12 +50,8 @@ if st.button("开始选址分析"):
                 if pois.empty:
                     return "KMeans聚类算法", "POI过少，默认选择 KMeans"
                 count = len(pois)
-                lat_span = pois["lat"].max() - pois["lat"].min()
-                lng_span = pois["lng"].max() - pois["lng"].min()
                 if count > 6000:
                     return "KMeans聚类算法", "POI量大，自动选择 KMeans"
-                if lat_span > 0.40 or lng_span > 0.40:
-                    return "遗传算法", "城市跨度大，自动选择 GA"
                 try:
                     from sklearn.cluster import KMeans
                     tmp = KMeans(n_clusters=3).fit_predict(pois[['lat', 'lng']])
@@ -407,6 +403,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
         file_name=f"{city}_选址结果.csv",
         mime="text/csv"
     )
+
 
 
 
