@@ -365,14 +365,35 @@ if st.session_state["algo"] == "KMeans聚类算法":
     # 下载 HTML
     html_str = m.get_root().render()
     html_bytes = html_str.encode("utf-8")
-    st.download_button("下载 HTML 地图文件",data=html_bytes,file_name=f"{city}_选址地图.html",mime="text/html")
+    with st.form("download_html_form"):
+        st.download_button(
+            "下载 HTML 地图文件",
+            data=html_bytes,
+            file_name=f"{city}_选址地图.html",
+            mime="text/html",
+            key="download_html_btn"
+        )
     # 下载 CSV
     csv_buf = io.BytesIO()
     csv_df.to_csv(csv_buf, index=False, encoding="utf-8-sig")
     csv_buf.seek(0)
-    st.download_button("下载站点数据 CSV", data=csv_buf.getvalue(),file_name=f"{city}_选址结果.csv", mime="text/csv")
+    with st.form("download_station_form"):
+        st.download_button(
+            "下载站点结果 CSV",
+            data=csv_buf.getvalue(),
+            file_name=f"{city}_选址结果.csv",
+            mime="text/csv",
+            key="download_sta_btn"
+        )
     # 下载原始 POI 数据
     poi_buf = io.BytesIO()
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
-    st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+    with st.form("download_poi_form"):
+        st.download_button(
+            "下载原始 POI 数据 CSV",
+            data=poi_buf.getvalue(),
+            file_name=f"{city}_POI数据.csv",
+            mime="text/csv",
+            key="download_poi_btn"
+        )
