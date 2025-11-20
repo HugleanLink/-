@@ -283,7 +283,6 @@ if st.session_state["algo"] == "KMeans聚类算法":
             f"中心：({c['center_lat']:.6f}, {c['center_lng']:.6f})<br>"
             f"半径：{c['radius_km']:.2f} km<br>"
             f"内部 POI 数量：{c['poi_count']}<br>"
-            f"<i>点击圈或星号查看信息</i>"
         )
         folium.Circle(
             [c["center_lat"], c["center_lng"]],
@@ -376,3 +375,4 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
