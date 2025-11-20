@@ -143,7 +143,6 @@ if st.session_state["algo"] == "KMeans聚类算法":
         st.error("无法获取城市中心，请检查城市名称或 API Key")
         st.stop()
     st.success(f"城市中心：({preset_center_lat:.5f}, {preset_center_lng:.5f})")
-
     # 获取 POI
     st.write("正在获取 POI 数据…")
     keyword_list = [k.strip() for k in keywords.split(",")]
@@ -159,7 +158,6 @@ if st.session_state["algo"] == "KMeans聚类算法":
         st.stop()
     all_pois.drop_duplicates(subset=["lat", "lng", "name"], inplace=True)
     all_pois["weight"] = all_pois["category"].map(weights).fillna(0.5)
-
     # 过滤郊区
     d = [
         haversine(preset_center_lat, preset_center_lng, r["lat"], r["lng"])
@@ -167,7 +165,6 @@ if st.session_state["algo"] == "KMeans聚类算法":
     ]
     all_pois = all_pois[np.array(d) <= preset_filter_radius_km]
     st.success(f"有效 POI 数量：{len(all_pois)}")
-
     # 聚类
     coords = all_pois[['lat', 'lng']].values
     weights_array = all_pois['weight'].values
@@ -194,7 +191,6 @@ if st.session_state["algo"] == "KMeans聚类算法":
         ring_min = radius - ring_buffer_km
         ring_max = radius + ring_buffer_km
         ring_pois = all_pois[(np.array(distances) >= ring_min) & (np.array(distances) <= ring_max)]
-
         # 一级站
         if len(ring_pois) < num_primary_stations_per_circle:
             angle_step = 360 / num_primary_stations_per_circle
@@ -220,7 +216,6 @@ if st.session_state["algo"] == "KMeans聚类算法":
                     "lng": lng,
                     "circle_id": i + 1
                 })
-
         # 二级站
         outer_min = radius
         outer_max = radius + outer_buffer_km
@@ -267,6 +262,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
                     })
                     idx += 1
 
+
     # 绘制地图
     st.write("选址结果地图")
     map_center = [all_pois["lat"].mean(), all_pois["lng"].mean()]
@@ -282,10 +278,25 @@ if st.session_state["algo"] == "KMeans聚类算法":
             color="gray", fill=True, fill_opacity=0.6
         ).add_to(m)
     for idx, c in enumerate(circles):
+        popup_html = (
+            f"<b>繁华中心 {idx + 1}</b><br>"
+            f"中心：({c['center_lat']:.6f}, {c['center_lng']:.6f})<br>"
+            f"半径：{c['radius_km']:.2f} km<br>"
+            f"内部 POI 数量：{c['poi_count']}<br>"
+            f"<i>点击圈或星号查看信息</i>"
+        )
         folium.Circle(
             [c["center_lat"], c["center_lng"]],
             radius=c["radius_km"] * 1000,
-            color="red", weight=3, fill=True, fill_color="red", fill_opacity=0.2
+            color="red", weight=3, fill=True, fill_color="red", fill_opacity=0.2,
+            popup=folium.Popup(popup_html, max_width=300),
+            tooltip=f"繁华中心 {idx + 1}"
+        ).add_to(m)
+        folium.Marker(
+            [c["center_lat"], c["center_lng"]],
+            icon=folium.Icon(color="red", icon="star"),
+            popup=folium.Popup(popup_html, max_width=300),
+            tooltip=f"繁华中心 {idx + 1}"
         ).add_to(m)
         folium.Marker(
             [c["center_lat"], c["center_lng"]],
@@ -312,9 +323,10 @@ if st.session_state["algo"] == "KMeans聚类算法":
                     color="yellow", weight=3, opacity=0.7
                 ).add_to(m)
                 break
-
     # 显示地图
     st_folium(m, width=900, height=600, returned_objects=[])
+
+
     # 导出 CSV
     csv_data = []
     for idx, c in enumerate(circles):
@@ -346,33 +358,21 @@ if st.session_state["algo"] == "KMeans聚类算法":
             '半径_km': '',
             'POI数量': ''
         })
+        
+        
     csv_df = pd.DataFrame(csv_data)
-    csv_buf = io.StringIO()
-    csv_df.to_csv(csv_buf, index=False, encoding="utf-8-sig")
     st.write("下载结果")
     # 下载 HTML
     html_str = m.get_root().render()
     html_bytes = html_str.encode("utf-8")
-    st.download_button(
-        "下载 HTML 地图文件",
-        data=html_bytes,
-        file_name=f"{city}_选址地图.html",
-        mime="text/html"
-    )
+    st.download_button("下载 HTML 地图文件",data=html_bytes,file_name=f"{city}_选址地图.html",mime="text/html")
     # 下载 CSV
-    st.download_button(
-        "下载站点数据 CSV",
-        data=csv_buf.getvalue(),
-        file_name=f"{city}_选址结果.csv",
-        mime="text/csv"
-    )
-# 下载原始 POI 数据
-poi_buf = io.StringIO()
-all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
-st.download_button(
-    "下载POI数据 CSV",
-    data=poi_buf.getvalue(),
-    file_name=f"{city}_POI数据.csv",
-    mime="text/csv"
-)
-
+    csv_buf = io.BytesIO()
+    csv_df.to_csv(csv_buf, index=False, encoding="utf-8-sig")
+    csv_buf.seek(0)
+    st.download_button("下载站点数据 CSV", data=csv_buf.getvalue(),file_name=f"{city}_选址结果.csv", mime="text/csv")
+    # 下载原始 POI 数据
+    poi_buf = io.BytesIO()
+    all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
+    poi_buf.seek(0)
+    st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
