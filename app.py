@@ -46,14 +46,14 @@ if st.session_state["algo"] == "遗传算法":
     st.write("正在运行遗传算法…")
     import JonnyVan as ga
     ga_map, ga_info = ga.run_ga(st.session_state["city"], st.session_state["api_key"])
-    st_folium(ga_map, width=900, height=600,key="site_map")
+    st_folium(ga_map, width=900, height=600,returned_objects=[])
     with st.expander("算法信息"):
         st.json(ga_info)
     st.stop()
 if st.session_state["algo"] == "景区建站算法":
     import ScenicPlanner as sp
     scenic_map, scenic_info = sp.run_scenic(city, api_key,)
-    st_folium(scenic_map, width=900, height=600,key="site_map")
+    st_folium(scenic_map, width=900, height=600,returned_objects=[])
     with st.expander("景区选址信息"):
         st.json(scenic_info)
     st.stop()
@@ -314,7 +314,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
                 break
 
     # 显示地图
-    st_folium(m, width=900, height=600, key="site_map")
+    st_folium(m, width=900, height=600, returned_objects=[])
     # 导出 CSV
     csv_data = []
     for idx, c in enumerate(circles):
@@ -375,3 +375,4 @@ st.download_button(
     file_name=f"{city}_POI数据.csv",
     mime="text/csv"
 )
+
