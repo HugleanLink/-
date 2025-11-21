@@ -111,7 +111,7 @@ def fallback_filter_secondary(sec_df, primaries, min_dist_km):
     return pd.DataFrame(filtered) if filtered else pd.DataFrame(columns=sec_df.columns)
 
 
-def run_ga_fallback(city, api_key):
+def run_ga(city, api_key):
     KEYWORDS = ["商场", "餐饮服务", "酒店", "超市", "写字楼", "地铁站"]
     pois = fallback_fetch_pois(city, api_key, KEYWORDS)
     if pois.empty:
@@ -180,3 +180,4 @@ def run_ga_fallback(city, api_key):
         "level2_count": len(L2),
     }
     return m, info
+
