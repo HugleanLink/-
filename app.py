@@ -9,7 +9,7 @@ from math import radians, sin, cos, sqrt, atan2, asin, degrees
 import io
 
 # streamlit页面设置
-st.set_page_config(page_title="选址", layout="wide")
+st.set_page_config(page_title="城市物流无人机起降站选址系统", layout="wide")
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德API Key，然后点击“开始选址分析”。")
 SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
@@ -375,6 +375,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
