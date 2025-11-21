@@ -45,33 +45,8 @@ if "run_analysis" not in st.session_state or not st.session_state["run_analysis"
 if st.session_state["algo"] == "遗传算法":
     st.write("正在运行遗传算法…")
     import JonnyVan as ga
-    ga_map, ga_info, primaries, secondaries, pois = ga.run_ga(
-    st.session_state["city"],
-    st.session_state["api_key"]
-)
-st_folium(ga_map, width=900, height=600, returned_objects=[])
-html_file = "GA_选址结果.html"
-ga_map.save(html_file)
-with open(html_file, "rb") as f:
-    st.download_button("下载 HTML 地图", f, html_file)
-import pandas as pd
-df_prim = pd.DataFrame(primaries)
-df_sec = pd.DataFrame(secondaries)
-df_prim["type"] = "一级站"
-df_sec["type"] = "二级站"
-df_stations = pd.concat([df_prim, df_sec], ignore_index=True)
-csv_st = df_stations.to_csv(index=False, encoding="utf-8-sig")
-st.download_button(
-    "下载基站坐标 CSV",
-    csv_st,
-    file_name=f"{city}_基站坐标.csv"
-)
-csv_pois = pois.to_csv(index=False, encoding="utf-8-sig")
-st.download_button(
-    "下载 POI 数据 CSV",
-    csv_pois,
-    file_name=f"{city}_POI.csv"
-)
+    ga_map, ga_info = ga.run_ga(st.session_state["city"], st.session_state["api_key"])
+    st_folium(ga_map, width=900, height=600,returned_objects=[])
     with st.expander("算法信息"):
         st.json(ga_info)
     st.stop()
@@ -400,6 +375,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
