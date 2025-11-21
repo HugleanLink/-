@@ -179,6 +179,28 @@ def run_ga(city, api_key):
         "level1_count": len(level1),
         "level2_count": len(L2),
     }
-    return m, info
+# 在 GAPlanner.run 的最后 return 之前 插入：
+
+# ======== 导出功能函数 ========
+def export_html(self, m, filename="ga_map.html"):
+    m.save(filename)
+    return filename
+
+def export_stations_csv(self, primaries, secondaries, filename="ga_stations.csv"):
+    df1 = pd.DataFrame(primaries)
+    df2 = pd.DataFrame(secondaries)
+    df1["type"] = "primary"
+    df2["type"] = "secondary"
+    df = pd.concat([df1, df2], ignore_index=True)
+    df.to_csv(filename, index=False, encoding="utf-8-sig")
+    return filename
+
+def export_pois_csv(self, filename="ga_pois.csv"):
+    self.pois.to_csv(filename, index=False, encoding="utf-8-sig")
+    return filename
+
+    return m, info, primaries, secondaries, self.pois
+
+
 
 
