@@ -68,7 +68,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
 
 
     # 参数
-    keywords = '商场,购物中心,中餐厅,西餐厅,咖啡厅,甜品店,酒店,宾馆,酒吧,KTV,电影院,超市,便利店,写字楼,办公楼,地铁站'
+    keywords = '中餐厅,西餐厅,咖啡厅,甜品店,酒店,宾馆,酒吧,KTV,电影院,超市,便利店,写字楼,办公楼,地铁站'
     weights = {
         '中餐厅': 1.0, '西餐厅': 1.0, '咖啡厅': 0.9, '甜品店': 0.9,
         '商场': 0.9, '购物中心': 0.9, '酒店': 0.7, '宾馆': 0.7,
@@ -375,5 +375,6 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
