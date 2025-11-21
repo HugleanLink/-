@@ -8,7 +8,7 @@ from shapely.geometry import Point, Polygon
 from scipy.spatial import ConvexHull
 
 
-AMAP_TILE_URL = "https://webrd02.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}"
+AMAP_TILE_URL = "https://webrd01.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8"
 KM_PER_DEG = 111.0
 
 
@@ -180,4 +180,5 @@ def run_ga(city, api_key):
         "level2_count": len(L2),
     }
     return m, info
+
 
