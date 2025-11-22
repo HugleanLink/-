@@ -57,11 +57,22 @@ div[data-testid="stNotification"] {
 def add_banner(image_path):
     with open(image_path, "rb") as f:
         data = base64.b64encode(f.read()).decode()
-
     st.markdown(
         f"""
-        <div style="width:100%; text-align:center; margin-bottom:15px;">
-            <img src="data:image/jpg;base64,{data}" style="width: 85%; border-radius:15px;"/>
+        <div style="
+            width:100%;
+            padding:0px;
+            margin:0px auto 8px auto; 
+            text-align:center;
+        ">
+            <img src="data:image/jpg;base64,{data}"
+                 style="
+                    width:100%;            
+                    margin:0px;           
+                    padding:0px;            
+                    border-radius:10px;    
+                    display:block;
+                "/>
         </div>
         """,
         unsafe_allow_html=True
@@ -435,6 +446,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
