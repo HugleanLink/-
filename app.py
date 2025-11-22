@@ -10,85 +10,56 @@ import io
 import base64
 import time
 
-
+# streamlit页面设置
 st.set_page_config(page_title="城市物流无人机起降站选址系统", layout="wide")
+# 自定义CSS美化
 st.markdown("""
 <style>
-@keyframes slideInLeft {
-    0% { opacity: 0; transform: translateX(-35px); }
-    100% { opacity: 1; transform: translateX(0); }
+[data-testid="stAppViewContainer"]
+.stButton>button {background-color: #4f46e5;color: white;padding: 0.6rem 1.2rem;border-radius: 10px;border: none;font-size: 18px;transition: 0.3s;}
+.stButton>button:hover {background-color: #4338ca;transform: translateY(-2px);}
+.stTextInput>div>div>input {border-radius: 10px;border: 1px solid #cbd5e1;padding: 10px;}
+.css-1wa3eu0-placeholder,
+.css-2b097c-container {border-radius: 10px !important;}
+.streamlit-expanderHeader {font-size: 18px !important;font-weight: 600 !important;color: #334155 !important;}
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+@keyframes slideInTitle {
+    0% { 
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.animate { 
-    animation: slideInLeft 0.9s ease-out;
-}
-.delay1 { animation-delay: 0.15s; }
-.delay2 { animation-delay: 0.30s; }
-.delay3 { animation-delay: 0.45s; }
-.delay4 { animation-delay: 0.60s; }
-.delay5 { animation-delay: 0.75s; }
-.delay6 { animation-delay: 0.90s; }
 h1 {
-    animation: slideInLeft 1.0s ease-out;
+    animation: slideInTitle 1.0s ease-out;
 }
-.intro-text { 
-    animation: slideInLeft 1.0s ease-out;
-    color: #475569;
-    font-size: 18px;
-    margin-bottom: 1rem;
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+@keyframes msgPop {
+    0% { opacity: 0; transform: scale(0.97); }
+    100% { opacity: 1; transform: scale(1); }
 }
-div[data-baseweb="select"] {
-    animation: slideInLeft 1s ease-out;
-}
-.stTextInput {
-    animation: slideInLeft 1s ease-out;
-}
-.stButton>button {
-    background-color: #4f46e5; 
-    color: white; 
-    padding: 0.6rem 1.2rem;
-    border-radius: 10px;
-    border: none;
-    font-size: 18px;
-    transition: 0.3s;
-    animation: slideInLeft 1s ease-out;
-}
-.stButton>button:hover {
-    background-color: #4338ca;
-    transform: translateY(-2px);
-}
-.stTextInput>div>div>input {
-    border-radius: 10px;
-    border: 1px solid #cbd5e1;
-    padding: 10px;
-}
-.css-1wa3eu0-placeholder,
-.css-2b097c-container {
-    border-radius: 10px !important;
-}
-.streamlit-expander {
-    animation: slideInLeft 1s ease-out;
-}
-.streamlit-expanderHeader { 
-    font-size: 18px !important;
-    font-weight: 600 !important;
-    color: #334155 !important;
+
+div[data-testid="stNotification"] {
+    animation: msgPop 0.5s ease-out;
 }
 </style>
 """, unsafe_allow_html=True)
 st.title("起降站选址系统")
-st.markdown('<p class="intro-text delay1">请输入城市名称和高德API Key，然后点击“开始选址分析”。</p>',unsafe_allow_html=True)
+st.write("请输入城市名称和高德API Key，然后点击“开始选址分析”。")
 SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
-st.markdown("<div class='animate delay2'>", unsafe_allow_html=True)
 algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"])
-st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("<div class='animate delay3'>", unsafe_allow_html=True)
 city = st.text_input("城市名称（例如：武汉市）")
-st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("<div class='animate delay4'>", unsafe_allow_html=True)
 api_key = st.text_input("输入高德API Key", type="password")
-st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("<div class='animate delay5'>", unsafe_allow_html=True)
 with st.expander("高级配置"):
     target_radius_km = st.text_input("指定中心繁华区半径", "8")
     num_clusters = st.text_input("中心繁华区个数", "1")
@@ -97,11 +68,7 @@ with st.expander("高级配置"):
     preset_filter_radius_km = st.text_input("超过城市中心坐标多少公里不纳入考虑", "30")
     outer_buffer_km = st.text_input("二级站的覆盖环带宽度(千米)", "20")
     secondary_radius_km = st.text_input("二级站的最远辐射距离(千米)", "4")
-st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("<div class='animate delay6'>", unsafe_allow_html=True)
-start = st.button("开始选址分析")
-st.markdown("</div>", unsafe_allow_html=True)
-if start:
+if st.button("开始选址分析"):
     if city.strip() == "":
         st.warning("请先输入城市名称。")
         st.stop()
@@ -113,13 +80,12 @@ if start:
         else:
             st.session_state["algo"] = "KMeans聚类算法"
             time.sleep(1.5)
-            st.info(f"已为 {city} 自动选择 KMeans 聚类算法")
+            st.info(f"已为 {city} 自动选择KMeans聚类算法")
     else:
         st.session_state["algo"] = algo_choice
     st.session_state["city"] = city
     st.session_state["api_key"] = api_key
     st.session_state["run_analysis"] = True
-
 if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
     st.stop()
 if st.session_state["algo"] == "遗传算法":
@@ -456,6 +422,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
