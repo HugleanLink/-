@@ -228,14 +228,18 @@ if st.session_state["algo"] == "KMeans聚类算法":
             return None, None
 
 
-    def haversine(lat1, lon1, lat2, lon2):
+    def haversine_np(lat1, lon1, lat2_array, lon2_array):
         R = 6371
-        dlat = radians(lat2 - lat1)
-        dlon = radians(lon2 - lon1)
-        a = sin(dlat / 2) ** 2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
-        return 2 * R * atan2(sqrt(a), sqrt(1 - a))
+        lat1 = np.radians(lat1)
+        lon1 = np.radians(lon1)
+        lat2 = np.radians(lat2_array)
+        lon2 = np.radians(lon2_array)
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+        a = np.sin(dlat / 2) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2) ** 2
+        return 2 * R * np.arcsin(np.sqrt(a))
 
-
+    
     def get_destination_point(lat, lng, distance_km, bearing_deg):
         R = 6371
         lat1, lng1 = radians(lat), radians(lng)
@@ -300,9 +304,8 @@ if st.session_state["algo"] == "KMeans聚类算法":
     # 聚类
     coords = all_pois[['lat', 'lng']].values
     weights_array = all_pois['weight'].values
-    weighted_coords = np.repeat(coords, (weights_array * 10).astype(int) + 1, axis=0)
-    kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
-    labels = kmeans.fit_predict(weighted_coords)
+    kmeans = KMeans(n_clusters=num_clusters,random_state=42,n_init=10)
+    kmeans.fit(coords, sample_weight=weights_array)
     cluster_centers = kmeans.cluster_centers_
     circles = []
     primary_stations = []
@@ -507,3 +510,4 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
