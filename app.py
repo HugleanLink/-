@@ -25,21 +25,7 @@ h1 {font-size: 42px !important;font-weight: 800 !important;color: #334155 !impor
 .streamlit-expanderHeader {font-size: 18px !important;font-weight: 600 !important;color: #334155 !important;}
 </style>
 """, unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-.main {padding-left: 8%;padding-right: 8%;}
-.card {background-color: #161b22;padding: 25px;border-radius: 15px;box-shadow: 0px 0px 15px rgba(0,0,0,0.35);margin-bottom: 25px;}
-.stButton>button {background-color: #1e88e5;color: white;border-radius: 10px;height: 50px;width: 200px;border: none;font-size: 18px;}
-.stButton>button:hover {background-color: #42a5f5;}
-</style>
-""", unsafe_allow_html=True)
-
-
-
 st.title("起降站选址系统")
-st.markdown("<div class='card'>", unsafe_allow_html=True)
-
 st.write("请输入城市名称和高德API Key，然后点击“开始选址分析”。")
 SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
 algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"])
@@ -53,7 +39,6 @@ with st.expander("高级配置"):
     preset_filter_radius_km = st.text_input("超过城市中心坐标多少公里不纳入考虑", "30")
     outer_buffer_km = st.text_input("二级站的覆盖环带宽度(千米)", "20")
     secondary_radius_km = st.text_input("二级站的最远辐射距离(千米)", "4")
-st.markdown("</div>", unsafe_allow_html=True)
 if st.button("开始选址分析"):
     if city.strip() == "":
         st.warning("请先输入城市名称。")
@@ -408,6 +393,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
