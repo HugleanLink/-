@@ -13,8 +13,7 @@ import time
 
 # 页面基本设置
 st.set_page_config(page_title="城市物流无人机起降站选址系统", layout="wide")
-
-# ====================== 顶部导航栏 ======================
+# 顶部导航栏 
 st.markdown("""
 <style>
 .navbar {
@@ -47,19 +46,25 @@ st.markdown("""
     font-weight:600;
 }
 </style>
-
 <div class="navbar">
     <span class="nav-title">无人机起降站选址系统</span>
     <span class="nav-item">首页</span>
     <span class="nav-item">选址分析</span>
     <span class="nav-item">数据管理</span>
 </div>
-
 <br><br><br> <!-- 推内容下移，避免被导航栏挡住 -->
 """, unsafe_allow_html=True)
-
-
-# ====================== 顶部 Banner ======================
+st.markdown("""
+<style>
+section[data-testid="stSidebar"] {
+    background-color: #f1f5f9;
+}
+section[data-testid="stSidebar"] .css-1j8ejud {
+    color: #1e293b !important;
+}
+</style>
+""", unsafe_allow_html=True)
+# 顶部 Banner
 def add_banner(image_path):
     with open(image_path, "rb") as f:
         data = base64.b64encode(f.read()).decode()
@@ -73,26 +78,20 @@ def add_banner(image_path):
     )
 
 add_banner("微信图片_20251122175115_115_17.jpg")
-
-
-# ====================== 首页主标题 ======================
+# 首页主标题
 st.markdown(f"""
 <div style="display:flex; align-items:center; gap:16px; margin-top:-10px;">
     <img src="data:image/png;base64,{base64.b64encode(open('cauc.png','rb').read()).decode()}"
          style="height:50px; width:auto;"/>
     <h1 style="margin:0; padding:0;">起降站选址系统</h1>
 </div>
-
 <p style="font-size:18px; color:#475569; margin-top:5px;">
 基于大规模 POI 数据分析、聚类算法、遗传算法，实现城市无人机起降站的自动化智能布局。
 </p>
 """, unsafe_allow_html=True)
-
-
-# ====================== 主体：左右布局 ======================
+# 主体：左右布局
 left, right = st.columns([0.9, 1.1], gap="large")
-
-# ====================== 左侧：系统介绍 ======================
+# 左侧：系统介绍 
 with left:
     st.markdown("""
     <div style="padding:20px 25px; border-radius:16px; 
@@ -103,8 +102,6 @@ with left:
         本系统通过 <b>高德地图POI数据</b> + <b>KMeans聚类</b> +
         <b>遗传算法(GA)</b>，自动计算城市内最优的无人机起降站布局。
     </p>
-    
-
     <h4 style="margin-top:20px; color:#334155;"> 使用步骤</h4>
     <ol style="color:#475569; line-height:1.7;">
         <li>输入城市名称与 API Key</li>
@@ -112,33 +109,24 @@ with left:
         <li>点击“开始选址分析”</li>
         <li>查看地图并下载结果</li>
     </ol>
-
     </div>
     """, unsafe_allow_html=True)
-
-
-# ====================== 右侧：输入表单卡片 ======================
+# 右侧：输入表单卡片
 with right:
     st.markdown("<div style='margin-top:6px'></div>", unsafe_allow_html=True)
     st.markdown("""
     <div class="card">
         <h3 style="color:#1e293b; font-weight:700;"> 输入参数</h3>
     """, unsafe_allow_html=True)
-
     city = st.text_input("城市名称（例如：武汉市）")
     api_key = st.text_input("输入高德API Key", type="password")
-
     SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
     algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",
                                ["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"])
-
     st.markdown("</div>", unsafe_allow_html=True)
-
-
-# ====================== 高级配置卡片 ======================
-with st.expander("⚙ 高级配置（可选）"):
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-
+# 左侧边栏：高级配置
+with st.sidebar.expander("⚙ 高级配置（可选）", expanded=False):
+    st.markdown('<div class="card" style="padding: 1rem 1.2rem;">', unsafe_allow_html=True)
     target_radius_km = st.text_input("指定中心繁华区半径", "8")
     num_clusters = st.text_input("中心繁华区个数", "1")
     num_primary_stations_per_circle = st.text_input("负责繁华区的一级站个数", "5")
@@ -146,18 +134,13 @@ with st.expander("⚙ 高级配置（可选）"):
     preset_filter_radius_km = st.text_input("超过城市中心坐标多少公里不纳入考虑", "30")
     outer_buffer_km = st.text_input("二级站的覆盖环带宽度(千米)", "20")
     secondary_radius_km = st.text_input("二级站的最远辐射距离(千米)", "4")
-
     st.markdown("</div>", unsafe_allow_html=True)
-
-
-
-# ====================== 开始按钮 ======================
+# 开始按钮 
 st.markdown("<br>", unsafe_allow_html=True)
 if st.button("开始选址分析"):
     if city.strip() == "":
         st.warning("请先输入城市名称。")
         st.stop()
-
     if algo_choice == "不选择":
         if any(c in city for c in SPECIAL_GA_CITIES):
             st.session_state["algo"] = "遗传算法"
@@ -169,15 +152,11 @@ if st.button("开始选址分析"):
             st.info(f"已为 {city} 自动选择：KMeans聚类算法")
     else:
         st.session_state["algo"] = algo_choice
-
     st.session_state["city"] = city
     st.session_state["api_key"] = api_key
     st.session_state["run_analysis"] = True
 
-# —— 这里开始仍然进入你原来的 “# 参数” 区域，不需要改 ——
-
-
-
+    
     # 参数
     keywords = '中餐厅,西餐厅,咖啡厅,甜品店,酒店,宾馆,酒吧,KTV,电影院,超市,便利店,写字楼,办公楼,地铁站'
     weights = {
@@ -486,9 +465,3 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
-
-
-
-
-
-
