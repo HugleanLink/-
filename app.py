@@ -15,59 +15,31 @@ st.set_page_config(page_title="城市物流无人机起降站选址系统", layo
 # 自定义CSS美化
 st.markdown("""
 <style>
-[data-testid="stAppViewContainer"] {
-    background-color: #f8fafc;
-}
-h1 {
-    font-size: 42px !important;
-    font-weight: 800 !important;
-    color: #334155 !important;
-}
-.stButton>button {
-    background-color: #4f46e5;
-    color: white;
-    padding: 0.6rem 1.2rem;
-    border-radius: 10px;
-    border: none;
-    font-size: 18px;
-    transition: 0.3s;
-}
-.stButton>button:hover {
-    background-color: #4338ca;
-    transform: translateY(-2px);
-}
-.stTextInput>div>div>input {
-    border-radius: 10px;
-    border: 1px solid #cbd5e1;
-    padding: 10px;
-}
+[data-testid="stAppViewContainer"] {background-color: #f8fafc;}
+h1 {font-size: 42px !important;font-weight: 800 !important;color: #334155 !important;}
+.stButton>button {background-color: #4f46e5;color: white;padding: 0.6rem 1.2rem;border-radius: 10px;border: none;font-size: 18px;transition: 0.3s;}
+.stButton>button:hover {background-color: #4338ca;transform: translateY(-2px);}
+.stTextInput>div>div>input {border-radius: 10px;border: 1px solid #cbd5e1;padding: 10px;}
 .css-1wa3eu0-placeholder,
-.css-2b097c-container {
-    border-radius: 10px !important;
-}
-.streamlit-expanderHeader {
-    font-size: 18px !important;
-    font-weight: 600 !important;
-    color: #334155 !important;
-}
+.css-2b097c-container {border-radius: 10px !important;}
+.streamlit-expanderHeader {font-size: 18px !important;font-weight: 600 !important;color: #334155 !important;}
 </style>
 """, unsafe_allow_html=True)
 
-# def add_banner(image_path):
-#     with open(image_path, "rb") as f:
-#         data = base64.b64encode(f.read()).decode()
-#     st.markdown(
-#         f"""
-#         <div style="width:100%; text-align:center; margin-bottom:15px;">
-#             <img src="data:image/jpg;base64,{data}" style="width: 85%; border-radius:15px;"/>
-#         </div>
-#         """,
-#         unsafe_allow_html=True
-#     )
-# add_banner("34844544_p0.jpg")
+st.markdown("""
+<style>
+.main {padding-left: 8%;padding-right: 8%;}
+.card {background-color: #161b22;padding: 25px;border-radius: 15px;box-shadow: 0px 0px 15px rgba(0,0,0,0.35);margin-bottom: 25px;}
+.stButton>button {background-color: #1e88e5;color: white;border-radius: 10px;height: 50px;width: 200px;border: none;font-size: 18px;}
+.stButton>button:hover {background-color: #42a5f5;}
+</style>
+""", unsafe_allow_html=True)
+
 
 
 st.title("起降站选址系统")
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+
 st.write("请输入城市名称和高德API Key，然后点击“开始选址分析”。")
 SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
 algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"])
@@ -125,7 +97,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     preset_filter_radius_km = float(preset_filter_radius_km)
     outer_buffer_km = float(outer_buffer_km)
     secondary_radius_km = float(secondary_radius_km)
-
+st.markdown("</div>", unsafe_allow_html=True)
 
     # 参数
     keywords = '中餐厅,西餐厅,咖啡厅,甜品店,酒店,宾馆,酒吧,KTV,电影院,超市,便利店,写字楼,办公楼,地铁站'
@@ -435,6 +407,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
