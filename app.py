@@ -99,9 +99,10 @@ if st.button("开始选址分析"):
 if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
     st.stop()
 if st.session_state["algo"] == "遗传算法":
-    st.write("正在运行遗传算法…")
-    import JonnyVan as ga
-    ga_map, ga_info = ga.run_ga(st.session_state["city"], st.session_state["api_key"])
+    with st.spinner("正在运行遗传算法"):
+        import JonnyVan as ga
+        ga_map, ga_info = ga.run_ga(st.session_state["city"], st.session_state["api_key"])
+    st.success("遗传算法运行完成！")
     st_folium(ga_map, width=900, height=600,returned_objects=[])
     with st.expander("算法信息"):
         st.json(ga_info)
@@ -431,6 +432,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
