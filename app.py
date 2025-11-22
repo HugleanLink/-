@@ -8,6 +8,7 @@ from sklearn.cluster import KMeans
 from math import radians, sin, cos, sqrt, atan2, asin, degrees
 import io
 import base64
+import time
 
 # streamlit页面设置
 st.set_page_config(page_title="城市物流无人机起降站选址系统", layout="wide")
@@ -87,9 +88,11 @@ if st.button("开始选址分析"):
     if algo_choice == "不选择":
         if any(c in city for c in SPECIAL_GA_CITIES):
             st.session_state["algo"] = "遗传算法"
+            time.sleep(1.5)
             st.info(f"已为 {city} 自动选择遗传算法")
         else:
             st.session_state["algo"] = "KMeans聚类算法"
+            time.sleep(1.5)
             st.info(f"已为 {city} 自动选择KMeans聚类算法")
     else:
         st.session_state["algo"] = algo_choice
@@ -432,6 +435,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
