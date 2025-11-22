@@ -10,22 +10,17 @@ import io
 import base64
 import time
 
+
 # 页面基本设置
 st.set_page_config(page_title="城市物流无人机起降站选址系统", layout="wide")
-
-# ======================= 全局高级界面美化 ===========================
 st.markdown("""
 <style>
 body {
     background-color: #f8fafc;
 }
-
-/* 容器整体上移一点，让视觉更居中 */
 .block-container {
     padding-top: 1.2rem;
 }
-
-/* 卡片容器 */
 .card {
     background: white;
     padding: 1.5rem 2rem;
@@ -33,29 +28,21 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     margin-bottom: 1.5rem;
 }
-
-/* 节标题 */
 .section-title {
     font-size: 22px;
     font-weight: 700;
     color: #1e293b;
     margin-bottom: 12px;
 }
-
-/* 输入框统一样式 */
 input[type="text"], input[type="password"], textarea, select {
     border-radius: 10px !important;
     border: 1px solid #cbd5e1 !important;
     padding: 10px 14px !important;
     box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
 }
-
-/* Selectbox 容器 */
 .css-2b097c-container, .css-1wa3eu0-placeholder {
     border-radius: 10px !important;
 }
-
-/* 按钮高级化 */
 .stButton>button {
     background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
     color: white !important;
@@ -66,13 +53,10 @@ input[type="text"], input[type="password"], textarea, select {
     transition: 0.25s ease !important;
     box-shadow: 0 4px 12px rgba(99,102,241,0.3);
 }
-
 .stButton>button:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 22px rgba(99,102,241,0.35);
 }
-
-/* 主标题动画 */
 @keyframes slideInTitle {
     0% { opacity: 0; transform: translateX(-40px); }
     100% { opacity: 1; transform: translateX(0); }
@@ -82,8 +66,6 @@ h1 {
     font-weight: 800;
     color: #1e293b;
 }
-
-/* 通知弹窗动画 */
 @keyframes msgPop {
     0% { opacity: 0; transform: scale(0.97); }
     100% { opacity: 1; transform: scale(1); }
@@ -92,9 +74,22 @@ div[data-testid="stNotification"] {
     animation: msgPop 0.5s ease-out;
 }
 </style>
+<style>
+.block-container > div:nth-child(3) {
+    margin-top: -20px !important;   
+}
+.streamlit-expanderContent {
+    padding-top: 5px !important;  
+}
+.streamlit-expanderContent > div:first-child {
+    margin-top: -10px !important;
+}
+details[open] {
+    margin-top: -10px !important;
+}
+</style>
 """, unsafe_allow_html=True)
-
-# ======================= 顶部横幅 ===========================
+# 顶部横幅
 def add_banner(image_path):
     with open(image_path, "rb") as f:
         data = base64.b64encode(f.read()).decode()
@@ -106,34 +101,25 @@ def add_banner(image_path):
         """,
         unsafe_allow_html=True
     )
-
 add_banner("微信图片_20251122175115_115_17.jpg")
-
-# ======================= 标题区域 ===========================
+# 标题区域
 st.title("起降站选址系统")
-
 st.write("请输入城市名称和高德 API Key，然后点击“开始选址分析”。")
-
-# ======================= 输入区域 - 卡片布局 ===========================
+# 输入区域
 with st.container():
     st.markdown('<div class="card">', unsafe_allow_html=True)
-
     col1, col2 = st.columns([1, 1])
-
     with col1:
         st.markdown('<div class="section-title">📍 城市参数</div>', unsafe_allow_html=True)
         city = st.text_input("城市名称（例如：武汉市）")
         api_key = st.text_input("输入高德API Key", type="password")
-
     with col2:
         st.markdown('<div class="section-title">🧠 选址算法</div>', unsafe_allow_html=True)
         SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
         algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",
                                    ["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"])
-
     st.markdown("</div>", unsafe_allow_html=True)
-
-# ======================= 高级配置 - 卡片 ===========================
+# 高级配置
 with st.expander("高级配置（可选）"):
     st.markdown('<div class="card">', unsafe_allow_html=True)
     target_radius_km = st.text_input("指定中心繁华区半径", "8")
@@ -144,13 +130,11 @@ with st.expander("高级配置（可选）"):
     outer_buffer_km = st.text_input("二级站的覆盖环带宽度(千米)", "20")
     secondary_radius_km = st.text_input("二级站的最远辐射距离(千米)", "4")
     st.markdown("</div>", unsafe_allow_html=True)
-
-# ======================= 开始按钮 ===========================
+# 开始按钮
 if st.button("开始选址分析"):
     if city.strip() == "":
         st.warning("请先输入城市名称。")
         st.stop()
-
     if algo_choice == "不选择":
         if any(c in city for c in SPECIAL_GA_CITIES):
             st.session_state["algo"] = "遗传算法"
@@ -162,13 +146,10 @@ if st.button("开始选址分析"):
             st.info(f"已为 {city} 自动选择：KMeans聚类算法")
     else:
         st.session_state["algo"] = algo_choice
-
     st.session_state["city"] = city
     st.session_state["api_key"] = api_key
     st.session_state["run_analysis"] = True
 
-# ========== 我严格按照你的要求，在这里停止修改 ==========
-# ======================= # 参数 （未被修改） ===========================
 
     # 参数
     keywords = '中餐厅,西餐厅,咖啡厅,甜品店,酒店,宾馆,酒吧,KTV,电影院,超市,便利店,写字楼,办公楼,地铁站'
@@ -478,6 +459,7 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
