@@ -12,7 +12,7 @@ import time
 
 
 # 页面基本设置
-st.set_page_config(page_title="城市物流无人机起降站选址系统", layout="wide")
+st.set_page_config(page_title="城市物流无人机起降站选址系统", layout="wide",initial_sidebar_state="expanded")
 # 顶部导航栏 
 st.markdown("""
 <style>
@@ -465,6 +465,7 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
