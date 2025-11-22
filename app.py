@@ -101,9 +101,9 @@ with left:
         本系统通过 <b>高德地图POI数据</b> + <b>KMeans聚类</b> +
         <b>遗传算法(GA)</b>，自动计算城市内最优的无人机起降站布局。
     </p>
-    <h3 style="margin-top:10px; color:#334155;"> 使用步骤</h3>
+    <h3 style="margin-top:10px; color:#1e293b;"> 使用步骤</h3>
     <ol style="color:#475569; line-height:1.6;">
-        <li>输入城市名称与 API Key</li>
+        <li>输入城市名称与API Key</li>
         <li>选择或自动决定算法</li>
         <li>点击“开始选址分析”</li>
         <li>查看地图并下载结果</li>
@@ -124,7 +124,7 @@ with right:
                                ["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"])
     st.markdown("</div>", unsafe_allow_html=True)
 # 左侧边栏：高级配置
-with st.sidebar.expander("⚙ 高级配置（可选）", expanded=True):
+with st.sidebar:
     st.markdown('<div class="card" style="padding: 1rem 1.2rem;">', unsafe_allow_html=True)
     target_radius_km = st.text_input("指定中心繁华区半径", "8")
     num_clusters = st.text_input("中心繁华区个数", "1")
@@ -464,6 +464,7 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
