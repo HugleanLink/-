@@ -155,6 +155,32 @@ if st.button("开始选址分析"):
     st.session_state["city"] = city
     st.session_state["api_key"] = api_key
     st.session_state["run_analysis"] = True
+    if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
+    st.stop()
+if st.session_state["algo"] == "遗传算法":
+    with st.spinner("正在运行遗传算法"):
+        import JonnyVan as ga
+        ga_map, ga_info = ga.run_ga(st.session_state["city"], st.session_state["api_key"])
+    st.success("遗传算法运行完成！")
+    st_folium(ga_map, width=900, height=600, returned_objects=[])
+    with st.expander("算法信息"):
+        st.json(ga_info)
+    st.stop()
+if st.session_state["algo"] == "景区建站算法":
+    import ScenicPlanner as sp
+    scenic_map, scenic_info = sp.run_scenic(city, api_key, )
+    st_folium(scenic_map, width=900, height=600, returned_objects=[])
+    with st.expander("景区选址信息"):
+        st.json(scenic_info)
+    st.stop()
+if st.session_state["algo"] == "KMeans聚类算法":
+    target_radius_km = float(target_radius_km)
+    num_clusters = int(num_clusters)
+    num_primary_stations_per_circle = int(num_primary_stations_per_circle)
+    drone_range_km = float(drone_range_km)
+    preset_filter_radius_km = float(preset_filter_radius_km)
+    outer_buffer_km = float(outer_buffer_km)
+    secondary_radius_km = float(secondary_radius_km)
 
     
     # 参数
@@ -465,6 +491,7 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
