@@ -124,7 +124,7 @@ with right:
                                ["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"])
     st.markdown("</div>", unsafe_allow_html=True)
 # 左侧边栏：高级配置
-with st.sidebar.expander("⚙ 高级配置（可选）", expanded=False):
+with st.sidebar.expander("⚙ 高级配置（可选）", expanded=True):
     st.markdown('<div class="card" style="padding: 1rem 1.2rem;">', unsafe_allow_html=True)
     target_radius_km = st.text_input("指定中心繁华区半径", "8")
     num_clusters = st.text_input("中心繁华区个数", "1")
@@ -464,5 +464,6 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
