@@ -10,6 +10,59 @@ import io
 
 # streamlit页面设置
 st.set_page_config(page_title="城市物流无人机起降站选址系统", layout="wide")
+# ====== 自定义 CSS 美化 ======
+st.markdown("""
+<style>
+/* 整体背景色 */
+[data-testid="stAppViewContainer"] {
+    background-color: #f8fafc;
+}
+
+/* 标题更醒目 */
+h1 {
+    font-size: 42px !important;
+    font-weight: 800 !important;
+    color: #334155 !important;
+}
+
+/* 按钮增强 */
+.stButton>button {
+    background-color: #4f46e5;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    border: none;
+    font-size: 18px;
+    transition: 0.3s;
+}
+.stButton>button:hover {
+    background-color: #4338ca;
+    transform: translateY(-2px);
+}
+
+/* 输入框统一更精致 */
+.stTextInput>div>div>input {
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    padding: 10px;
+}
+
+/* selectbox */
+.css-1wa3eu0-placeholder,
+.css-2b097c-container {
+    border-radius: 10px !important;
+}
+
+/* expander 美化 */
+.streamlit-expanderHeader {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #334155 !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德API Key，然后点击“开始选址分析”。")
 SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
@@ -375,6 +428,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
