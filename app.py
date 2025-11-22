@@ -54,6 +54,19 @@ div[data-testid="stNotification"] {
 }
 </style>
 """, unsafe_allow_html=True)
+def add_banner(image_path):
+    with open(image_path, "rb") as f:
+        data = base64.b64encode(f.read()).decode()
+
+    st.markdown(
+        f"""
+        <div style="width:100%; text-align:center; margin-bottom:15px;">
+            <img src="data:image/jpg;base64,{data}" style="width: 85%; border-radius:15px;"/>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+add_banner("0427581DF213C7DB0FA7738D85D9B395.jpg")
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德API Key，然后点击“开始选址分析”。")
 SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
@@ -422,6 +435,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
