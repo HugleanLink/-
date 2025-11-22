@@ -53,6 +53,7 @@ with st.expander("高级配置"):
     preset_filter_radius_km = st.text_input("超过城市中心坐标多少公里不纳入考虑", "30")
     outer_buffer_km = st.text_input("二级站的覆盖环带宽度(千米)", "20")
     secondary_radius_km = st.text_input("二级站的最远辐射距离(千米)", "4")
+st.markdown("</div>", unsafe_allow_html=True)
 if st.button("开始选址分析"):
     if city.strip() == "":
         st.warning("请先输入城市名称。")
@@ -97,7 +98,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     preset_filter_radius_km = float(preset_filter_radius_km)
     outer_buffer_km = float(outer_buffer_km)
     secondary_radius_km = float(secondary_radius_km)
-st.markdown("</div>", unsafe_allow_html=True)
+
 
     # 参数
     keywords = '中餐厅,西餐厅,咖啡厅,甜品店,酒店,宾馆,酒吧,KTV,电影院,超市,便利店,写字楼,办公楼,地铁站'
@@ -407,6 +408,7 @@ st.markdown("</div>", unsafe_allow_html=True)
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
