@@ -136,8 +136,7 @@ with right:
     city = st.text_input("城市名称（例如：武汉市）")
     api_key = st.text_input("输入高德API Key", type="password")
     SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
-    algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",
-                               ["不选择", "KMeans聚类算法", "遗传算法", "景区建站算法"])
+    algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",["不选择", "KMeans聚类算法", "遗传算法", "景区建站算法"])
     st.markdown("</div>", unsafe_allow_html=True)
 # 左侧边栏：高级配置
 with st.sidebar:
@@ -174,9 +173,6 @@ if st.button("开始选址分析"):
 if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
     st.stop()
 
-# -------------------------
-# 并行 POI 获取：并行版（A）
-# -------------------------
 def _fetch_single_page(city, keyword, page, api_key, page_size=25, timeout=12):
     url = "https://restapi.amap.com/v3/place/text"
     params = {
@@ -223,7 +219,7 @@ def get_all_pois_parallel(city, keywords, api_key, max_pages=10, workers=3, page
                 df = fut.result()
             except Exception:
                 df = pd.DataFrame()
-            st.write(f"关键词 `{kw}` 获取到 {len(df)} 条 POI")
+            st.write(f"` {kw}` 获取到 {len(df)} 个")
             if not df.empty:
                 all_dfs.append(df)
     if not all_dfs:
@@ -232,9 +228,6 @@ def get_all_pois_parallel(city, keywords, api_key, max_pages=10, workers=3, page
     df_total.drop_duplicates(subset=["lat","lng","name"], inplace=True)
     return df_total
 
-# -------------------------
-# D: 向量化 haversine + sample_weight KMeans
-# -------------------------
 def haversine_np(lat1, lon1, lat2_array, lon2_array):
     R = 6371.0
     lat1r = np.radians(lat1)
@@ -287,7 +280,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     max_pages = 30
     num_secondary_stations = 6
     ring_buffer_km = 1.0
-
+    
     # 获取城市中心
     st.write("正在获取城市中心…")
     def get_city_center(city, api_key):
@@ -301,76 +294,64 @@ if st.session_state["algo"] == "KMeans聚类算法":
             return None, None
         except:
             return None, None
-
     with st.spinner("请求高德 API 中…"):
         preset_center_lat, preset_center_lng = get_city_center(city, api_key)
     if preset_center_lat is None:
         st.error("无法获取城市中心，请检查城市名称或 API Key")
         st.stop()
     st.success(f"城市中心：({preset_center_lat:.5f}, {preset_center_lng:.5f})")
-
-    # 并行获取 POI（替换原来的串行抓取）
+    
+    # 并行获取
     st.write("正在并行抓取 POI 数据…")
     keyword_list = [k.strip() for k in keywords.split(",")]
     with st.spinner("多线程抓取 POI…"):
         all_pois = get_all_pois_parallel(city, keyword_list, api_key, max_pages=min(15, max_pages), workers=3, page_size=25)
-
     if all_pois.empty:
         st.error("没有获取到任何 POI，请检查 API Key。")
         st.stop()
-
-    all_pois["category"] = all_pois["category"].fillna("")  # 保证存在 category 列
+    all_pois["category"] = all_pois["category"].fillna("") 
     all_pois["weight"] = all_pois["category"].map(weights).fillna(0.5)
-
-    # 过滤郊区（向量化）
+    
+    # 过滤郊区
     dists_to_center = haversine_np(preset_center_lat, preset_center_lng, all_pois["lat"].values, all_pois["lng"].values)
     all_pois = all_pois[dists_to_center <= preset_filter_radius_km].reset_index(drop=True)
     st.success(f"有效 POI 数量：{len(all_pois)}")
-
-    # 聚类（sample_weight）
+    
+    # 聚类
     coords = all_pois[['lat', 'lng']].values
     weights_array = all_pois['weight'].values
     if len(coords) < num_clusters:
         st.error("有效 POI 数量小于簇数量，无法聚类。")
         st.stop()
-
     kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
     kmeans.fit(coords, sample_weight=weights_array)
     cluster_centers = kmeans.cluster_centers_
-
     circles = []
     primary_stations = []
     secondary_stations = []
-
     for i, (center_lat, center_lng) in enumerate(cluster_centers):
-        # 向量化距离计算
         distances = haversine_np(center_lat, center_lng, all_pois["lat"].values, all_pois["lng"].values)
-
         valid_mask = distances <= target_radius_km
         valid = all_pois[valid_mask]
         if len(valid) == 0:
             continue
-
-        # 计算 radius（向量版）
         radius_candidates = distances[distances <= target_radius_km]
         if len(radius_candidates) == 0:
             radius = target_radius_km
         else:
             radius = float(min(max(radius_candidates), target_radius_km))
-
         circles.append({
             "center_lat": center_lat,
             "center_lng": center_lng,
             "radius_km": radius,
             "poi_count": int(len(valid))
         })
-
         ring_min = radius - ring_buffer_km
         ring_max = radius + ring_buffer_km
         ring_mask = (distances >= ring_min) & (distances <= ring_max)
         ring_pois = all_pois[ring_mask]
 
-        # 一级站（使用 sample_weight 的 KMeans，当 ring_pois 足够多时）
+        # 一级站
         if len(ring_pois) < num_primary_stations_per_circle:
             angle_step = 360 / num_primary_stations_per_circle
             for j in range(num_primary_stations_per_circle):
@@ -386,7 +367,6 @@ if st.session_state["algo"] == "KMeans聚类算法":
             ring_coords = ring_pois[['lat', 'lng']].values
             ring_weights = ring_pois['weight'].values
             km = KMeans(n_clusters=num_primary_stations_per_circle, random_state=42, n_init=10)
-            # 使用 sample_weight 直接拟合，不再重复点
             km.fit(ring_coords, sample_weight=ring_weights)
             centers = km.cluster_centers_
             for j, (lat, lng) in enumerate(centers):
@@ -397,7 +377,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
                     "circle_id": i + 1
                 })
 
-        # 二级站（向量化 outer_pois）
+        # 二级站
         outer_mask = (distances > radius) & (distances <= radius + outer_buffer_km)
         outer_pois = all_pois[outer_mask]
         need = num_primary_stations_per_circle * num_secondary_stations
@@ -407,8 +387,6 @@ if st.session_state["algo"] == "KMeans聚类算法":
                 for k in range(num_secondary_stations):
                     angle = np.random.uniform(0, 360)
                     lat, lng = get_destination_point(pri["lat"], pri["lng"], secondary_radius_km, angle)
-
-                    # 使用向量化 haversine_np 单点检测（返回数组，取第0）
                     if haversine_np(pri["lat"], pri["lng"], np.array([lat]), np.array([lng]))[0] > drone_range_km:
                         continue
                     if haversine_np(center_lat, center_lng, np.array([lat]), np.array([lng]))[0] <= radius:
@@ -443,7 +421,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
                     })
                     idx += 1
 
-    # 绘制地图（保持你原有设置）
+    # 绘制地图
     st.write("选址结果地图")
     map_center = [all_pois["lat"].mean(), all_pois["lng"].mean()]
     m = folium.Map(
@@ -497,10 +475,9 @@ if st.session_state["algo"] == "KMeans聚类算法":
                     color="yellow", weight=3, opacity=0.7
                 ).add_to(m)
                 break
-    # 显示地图
     st_folium(m, width=900, height=600, returned_objects=[])
 
-    # 导出 CSV / HTML（保持你原样）
+    # 导出
     csv_data = []
     for idx, c in enumerate(circles):
         csv_data.append({
@@ -533,18 +510,20 @@ if st.session_state["algo"] == "KMeans聚类算法":
         })
     csv_df = pd.DataFrame(csv_data)
     st.write("下载结果")
+    
     # 下载 HTML
     html_str = m.get_root().render()
     html_bytes = html_str.encode("utf-8")
     st.download_button("下载 HTML 地图文件",data=html_bytes,file_name=f"{city}_选址地图.html",mime="text/html")
+    
     # 下载 CSV
     csv_buf = io.BytesIO()
     csv_df.to_csv(csv_buf, index=False, encoding="utf-8-sig")
     csv_buf.seek(0)
     st.download_button("下载站点数据 CSV", data=csv_buf.getvalue(),file_name=f"{city}_选址结果.csv", mime="text/csv")
+    
     # 下载原始 POI 数据
     poi_buf = io.BytesIO()
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
-
