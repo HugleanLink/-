@@ -15,7 +15,7 @@ st.set_page_config(page_title="城市物流无人机起降站选址系统", layo
 # 自定义CSS美化
 st.markdown("""
 <style>
-[data-testid="stAppViewContainer"] {background-color: #f8fafc;}
+[data-testid="stAppViewContainer"]
 h1 {font-size: 42px !important;font-weight: 800 !important;color: #334155 !important;}
 .stButton>button {background-color: #4f46e5;color: white;padding: 0.6rem 1.2rem;border-radius: 10px;border: none;font-size: 18px;transition: 0.3s;}
 .stButton>button:hover {background-color: #4338ca;transform: translateY(-2px);}
@@ -393,6 +393,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
