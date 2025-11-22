@@ -126,6 +126,7 @@ with right:
 # 左侧边栏：高级配置
 with st.sidebar:
     st.markdown('<div class="card" style="padding: 1rem 1.2rem;">', unsafe_allow_html=True)
+    st.markdown('<h3 style="color:#1e293b; font-weight:700; margin-bottom:15px;"> 高级配置</h3>',unsafe_allow_html=True)
     target_radius_km = st.text_input("指定中心繁华区半径", "8")
     num_clusters = st.text_input("中心繁华区个数", "1")
     num_primary_stations_per_circle = st.text_input("负责繁华区的一级站个数", "5")
@@ -464,6 +465,7 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
