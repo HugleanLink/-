@@ -239,8 +239,22 @@ def haversine_np(lat1, lon1, lat2_array, lon2_array):
     a = np.sin(dlat/2.0)**2 + np.cos(lat1r) * np.cos(lat2r) * np.sin(dlon/2.0)**2
     c = 2 * np.arctan2(np.sqrt(a + 1e-12), np.sqrt(1 - a + 1e-12))
     return R * c
-
-# ---- 处理三种算法分支 ----
+def get_destination_point(lat, lng, distance_km, bearing_deg):
+    R = 6371  # 地球半径
+    lat1 = np.radians(lat)
+    lng1 = np.radians(lng)
+    b = np.radians(bearing_deg)
+    lat2 = np.arcsin(
+        np.sin(lat1) * np.cos(distance_km / R) +
+        np.cos(lat1) * np.sin(distance_km / R) * np.cos(b)
+    )
+    lng2 = lng1 + np.arctan2(
+        np.sin(b) * np.sin(distance_km / R) * np.cos(lat1),
+        np.cos(distance_km / R) - np.sin(lat1) * np.sin(lat2)
+    )
+    return np.degrees(lat2), np.degrees(lng2)
+    
+# 处理三种算法分支 
 if st.session_state["algo"] == "遗传算法":
     st.write("正在运行遗传算法…")
     import JonnyVan as ga
@@ -527,3 +541,4 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
