@@ -507,19 +507,3 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
