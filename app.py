@@ -112,7 +112,7 @@ with left:
     """, unsafe_allow_html=True)
 # 右侧：输入表单卡片
 with right:
-    st.markdown("<div style='margin-top:6px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top:10px'></div>", unsafe_allow_html=True)
     st.markdown("""
     <div class="card">
         <h3 style="color:#1e293b; font-weight:700;"> 输入参数</h3>
@@ -465,6 +465,7 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
