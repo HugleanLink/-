@@ -94,14 +94,14 @@ left, right = st.columns([0.9, 1.1], gap="large")
 # 左侧：系统介绍 
 with left:
     st.markdown("""
-    <div style="padding:20px 25px; border-radius:16px; 
+    <div style="padding:10px 10px; border-radius:16px; 
                 background:white; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
-    <h3 style="margin-top:10px; color:#334155;"> 系统简介</h3>
+    <h3 style="color:#1e293b; font-weight:700;"> 系统简介</h3>
     <p style="color:#475569; font-size:16px; line-height:1.6;">
         本系统通过 <b>高德地图POI数据</b> + <b>KMeans聚类</b> +
         <b>遗传算法(GA)</b>，自动计算城市内最优的无人机起降站布局。
     </p>
-    <h4 style="margin-top:10px; color:#334155;"> 使用步骤</h4>
+    <h3 style="margin-top:10px; color:#334155;"> 使用步骤</h3>
     <ol style="color:#475569; line-height:1.6;">
         <li>输入城市名称与 API Key</li>
         <li>选择或自动决定算法</li>
@@ -464,6 +464,7 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
