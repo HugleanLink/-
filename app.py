@@ -12,48 +12,48 @@ import time
 
 # streamlit页面设置
 st.set_page_config(page_title="城市物流无人机起降站选址系统", layout="wide")
-# # 自定义CSS美化
-# st.markdown("""
-# <style>
-# [data-testid="stAppViewContainer"]
-# .stButton>button {background-color: #4f46e5;color: white;padding: 0.6rem 1.2rem;border-radius: 10px;border: none;font-size: 18px;transition: 0.3s;}
-# .stButton>button:hover {background-color: #4338ca;transform: translateY(-2px);}
-# .stTextInput>div>div>input {border-radius: 10px;border: 1px solid #cbd5e1;padding: 10px;}
-# .css-1wa3eu0-placeholder,
-# .css-2b097c-container {border-radius: 10px !important;}
-# .streamlit-expanderHeader {font-size: 18px !important;font-weight: 600 !important;color: #334155 !important;}
-# </style>
-# """, unsafe_allow_html=True)
-# st.markdown("""
-# <style>
-# @keyframes slideInTitle {
-#     0% { 
-#         opacity: 0;
-#         transform: translateX(-40px);
-#     }
-#     100% {
-#         opacity: 1;
-#         transform: translateX(0);
-#     }
-# }
+# 自定义CSS美化
+st.markdown("""
+<style>
+[data-testid="stAppViewContainer"]
+.stButton>button {background-color: #4f46e5;color: white;padding: 0.6rem 1.2rem;border-radius: 10px;border: none;font-size: 18px;transition: 0.3s;}
+.stButton>button:hover {background-color: #4338ca;transform: translateY(-2px);}
+.stTextInput>div>div>input {border-radius: 10px;border: 1px solid #cbd5e1;padding: 10px;}
+.css-1wa3eu0-placeholder,
+.css-2b097c-container {border-radius: 10px !important;}
+.streamlit-expanderHeader {font-size: 18px !important;font-weight: 600 !important;color: #334155 !important;}
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+@keyframes slideInTitle {
+    0% { 
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 
-# h1 {
-#     animation: slideInTitle 1.0s ease-out;
-# }
-# </style>
-# """, unsafe_allow_html=True)
-# st.markdown("""
-# <style>
-# @keyframes msgPop {
-#     0% { opacity: 0; transform: scale(0.97); }
-#     100% { opacity: 1; transform: scale(1); }
-# }
+h1 {
+    animation: slideInTitle 1.0s ease-out;
+}
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+@keyframes msgPop {
+    0% { opacity: 0; transform: scale(0.97); }
+    100% { opacity: 1; transform: scale(1); }
+}
 
-# div[data-testid="stNotification"] {
-#     animation: msgPop 0.5s ease-out;
-# }
-# </style>
-# """, unsafe_allow_html=True)
+div[data-testid="stNotification"] {
+    animation: msgPop 0.5s ease-out;
+}
+</style>
+""", unsafe_allow_html=True)
 def add_banner(image_path):
     with open(image_path, "rb") as f:
         data = base64.b64encode(f.read()).decode()
@@ -434,6 +434,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
