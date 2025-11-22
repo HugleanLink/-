@@ -7,25 +7,21 @@ import requests
 from sklearn.cluster import KMeans
 from math import radians, sin, cos, sqrt, atan2, asin, degrees
 import io
+import base64
 
 # streamlit页面设置
 st.set_page_config(page_title="城市物流无人机起降站选址系统", layout="wide")
-# ====== 自定义 CSS 美化 ======
+# 自定义CSS美化
 st.markdown("""
 <style>
-/* 整体背景色 */
 [data-testid="stAppViewContainer"] {
     background-color: #f8fafc;
 }
-
-/* 标题更醒目 */
 h1 {
     font-size: 42px !important;
     font-weight: 800 !important;
     color: #334155 !important;
 }
-
-/* 按钮增强 */
 .stButton>button {
     background-color: #4f46e5;
     color: white;
@@ -39,29 +35,36 @@ h1 {
     background-color: #4338ca;
     transform: translateY(-2px);
 }
-
-/* 输入框统一更精致 */
 .stTextInput>div>div>input {
     border-radius: 10px;
     border: 1px solid #cbd5e1;
     padding: 10px;
 }
-
-/* selectbox */
 .css-1wa3eu0-placeholder,
 .css-2b097c-container {
     border-radius: 10px !important;
 }
-
-/* expander 美化 */
 .streamlit-expanderHeader {
     font-size: 18px !important;
     font-weight: 600 !important;
     color: #334155 !important;
 }
-
 </style>
 """, unsafe_allow_html=True)
+
+def add_banner(image_path):
+    with open(image_path, "rb") as f:
+        data = base64.b64encode(f.read()).decode()
+    st.markdown(
+        f"""
+        <div style="width:100%; text-align:center; margin-bottom:15px;">
+            <img src="data:image/jpg;base64,{data}" style="width: 85%; border-radius:15px;"/>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+add_banner("34844544_p0.jpg")
+
 
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德API Key，然后点击“开始选址分析”。")
@@ -428,6 +431,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
