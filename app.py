@@ -62,7 +62,7 @@ def add_banner(image_path):
         <div style="
             width:100%;
             padding:0px;
-            margin:-60px 8px ; 
+            margin:-60px 30px ; 
             text-align:center;
         ">
             <img src="data:image/jpg;base64,{data}"
@@ -446,6 +446,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
