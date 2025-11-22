@@ -76,7 +76,6 @@ def add_banner(image_path):
         """,
         unsafe_allow_html=True
     )
-
 add_banner("微信图片_20251122175115_115_17.jpg")
 # 首页主标题
 st.markdown(f"""
@@ -98,7 +97,7 @@ with left:
                 background:white; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
     <h3 style="color:#1e293b; font-weight:700;"> 系统简介</h3>
     <p style="color:#475569; font-size:16px; line-height:1.6;">
-        本系统通过 <b>高德地图POI数据</b> + <b>KMeans聚类</b> +
+        本系统通过 <b>高德地图POI数据</b> + <b>KMeans聚类</b> 或
         <b>遗传算法(GA)</b>，自动计算城市内最优的无人机起降站布局。
     </p>
     <h3 style="margin-top:10px; color:#1e293b;"> 使用步骤</h3>
@@ -121,7 +120,7 @@ with right:
     api_key = st.text_input("输入高德API Key", type="password")
     SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
     algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",
-                               ["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"])
+                               ["不选择", "遗传算法","KMeans聚类算法", "景区建站算法"])
     st.markdown("</div>", unsafe_allow_html=True)
 # 左侧边栏：高级配置
 with st.sidebar:
@@ -491,6 +490,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
