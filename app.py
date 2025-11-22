@@ -15,12 +15,15 @@ import time
 st.set_page_config(page_title="城市物流无人机起降站选址系统", layout="wide")
 st.markdown("""
 <style>
+
 body {
     background-color: #f8fafc;
 }
 .block-container {
     padding-top: 1.2rem;
 }
+
+/* 卡片 */
 .card {
     background: white;
     padding: 1.5rem 2rem;
@@ -28,21 +31,28 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     margin-bottom: 1.5rem;
 }
+
+/* 标题 */
 .section-title {
     font-size: 22px;
     font-weight: 700;
     color: #1e293b;
     margin-bottom: 12px;
 }
+
+/* 输入框 */
 input[type="text"], input[type="password"], textarea, select {
     border-radius: 10px !important;
     border: 1px solid #cbd5e1 !important;
     padding: 10px 14px !important;
     box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
 }
+
 .css-2b097c-container, .css-1wa3eu0-placeholder {
     border-radius: 10px !important;
 }
+
+/* 按钮 */
 .stButton>button {
     background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
     color: white !important;
@@ -53,10 +63,13 @@ input[type="text"], input[type="password"], textarea, select {
     transition: 0.25s ease !important;
     box-shadow: 0 4px 12px rgba(99,102,241,0.3);
 }
+
 .stButton>button:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 22px rgba(99,102,241,0.35);
 }
+
+/* 标题动画 */
 @keyframes slideInTitle {
     0% { opacity: 0; transform: translateX(-40px); }
     100% { opacity: 1; transform: translateX(0); }
@@ -66,6 +79,8 @@ h1 {
     font-weight: 800;
     color: #1e293b;
 }
+
+/* 通知动画 */
 @keyframes msgPop {
     0% { opacity: 0; transform: scale(0.97); }
     100% { opacity: 1; transform: scale(1); }
@@ -73,21 +88,26 @@ h1 {
 div[data-testid="stNotification"] {
     animation: msgPop 0.5s ease-out;
 }
-</style>
-<style>
-.block-container > div:nth-child(3) {
-    margin-top: -20px !important;   
+
+/* ================= 修复你的两个“多余留白” ================= */
+
+/* 修复说明文字下的空白：直接压掉 title 和 write 下的 margin */
+h1 + div, h1 + p, h1 + span {
+    margin-top: -15px !important;
 }
+
+/* expander 内容顶部的空白 */
 .streamlit-expanderContent {
-    padding-top: 5px !important;  
+    padding-top: 5px !important;
 }
+
+/* expander 第一行再压一次 */
 .streamlit-expanderContent > div:first-child {
     margin-top: -10px !important;
 }
-details[open] {
-    margin-top: -10px !important;
-}
+
 </style>
+
 """, unsafe_allow_html=True)
 # 顶部横幅
 def add_banner(image_path):
@@ -105,6 +125,7 @@ add_banner("微信图片_20251122175115_115_17.jpg")
 # 标题区域
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德 API Key，然后点击“开始选址分析”。")
+st.markdown("<div style='margin-top:-10px'></div>", unsafe_allow_html=True)
 # 输入区域
 with st.container():
     st.markdown('<div class="card">', unsafe_allow_html=True)
@@ -459,6 +480,7 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
