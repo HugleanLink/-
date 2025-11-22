@@ -99,13 +99,6 @@ with left:
         <b>遗传算法(GA)</b>，自动计算城市内最优的无人机起降站布局。
     </p>
     
-    <h4 style="margin-top:20px; color:#334155;">📌 功能亮点</h4>
-    <ul style="color:#475569; line-height:1.7;">
-        <li>自动识别城市繁华区、生成服务半径</li>
-        <li>一级站、二级站智能布局</li>
-        <li>支持 GA / KMeans / 景区模式</li>
-        <li>支持下载地图和站点数据</li>
-    </ul>
 
     <h4 style="margin-top:20px; color:#334155;">🚀 使用步骤</h4>
     <ol style="color:#475569; line-height:1.7;">
@@ -487,3 +480,4 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
