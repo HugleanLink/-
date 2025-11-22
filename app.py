@@ -64,6 +64,23 @@ section[data-testid="stSidebar"] .css-1j8ejud {
 }
 </style>
 """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+.stButton>button {
+    background-color: #4f46e5;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    border: none;
+    font-size: 18px;
+    transition: 0.3s;
+}
+.stButton>button:hover {
+    background-color: #4338ca;
+    transform: translateY(-2px);
+}
+</style>
+""", unsafe_allow_html=True)
 # 顶部 Banner
 def add_banner(image_path):
     with open(image_path, "rb") as f:
@@ -490,6 +507,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
