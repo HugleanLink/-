@@ -76,9 +76,14 @@ add_banner("微信图片_20251122175115_115_17.jpg")
 
 
 # ====================== 首页主标题 ======================
-st.markdown("""
-<h1 style="margin-top:-10px; font-size:46px;">起降站选址系统</h1>
-<p style="font-size:18px; color:#475569; margin-top:-15px;">
+st.markdown(f"""
+<div style="display:flex; align-items:center; gap:16px; margin-top:-10px;">
+    <img src="data:image/png;base64,{base64.b64encode(open('cauc.png','rb').read()).decode()}"
+         style="height:50px; width:auto;"/>
+    <h1 style="margin:0; padding:0;">起降站选址系统</h1>
+</div>
+
+<p style="font-size:18px; color:#475569; margin-top:5px;">
 基于大规模 POI 数据分析、聚类算法、遗传算法，实现城市无人机起降站的自动化智能布局。
 </p>
 """, unsafe_allow_html=True)
@@ -114,6 +119,7 @@ with left:
 
 # ====================== 右侧：输入表单卡片 ======================
 with right:
+    st.markdown("<div style='margin-top:6px'></div>", unsafe_allow_html=True)
     st.markdown("""
     <div class="card">
         <h3 style="color:#1e293b; font-weight:700;">🧭 输入参数</h3>
@@ -480,4 +486,5 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
