@@ -155,7 +155,7 @@ if st.button("开始选址分析"):
     st.session_state["city"] = city
     st.session_state["api_key"] = api_key
     st.session_state["run_analysis"] = True
-    if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
+if "run_analysis" not in st.session_state or not st.session_state["run_analysis"]:
     st.stop()
 if st.session_state["algo"] == "遗传算法":
     with st.spinner("正在运行遗传算法"):
@@ -491,6 +491,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
