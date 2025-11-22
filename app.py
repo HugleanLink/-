@@ -42,7 +42,18 @@ h1 {
 }
 </style>
 """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+@keyframes msgPop {
+    0% { opacity: 0; transform: scale(0.97); }
+    100% { opacity: 1; transform: scale(1); }
+}
 
+div[data-testid="stNotification"] {
+    animation: msgPop 0.5s ease-out;
+}
+</style>
+""", unsafe_allow_html=True)
 st.title("起降站选址系统")
 st.write("请输入城市名称和高德API Key，然后点击“开始选址分析”。")
 SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
@@ -411,6 +422,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
 
 
 
