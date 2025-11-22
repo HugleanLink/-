@@ -202,7 +202,7 @@ def _fetch_single_page(city, keyword, page, api_key, page_size=25, timeout=12):
     except Exception:
         return []
 
-def fetch_pois_parallel(city, keyword, api_key, max_pages=10, workers=4, page_size=25):
+def fetch_pois_parallel(city, keyword, api_key, max_pages=10, workers=3, page_size=25):
     results = []
     max_workers = min(workers, max_pages)
     with ThreadPoolExecutor(max_workers=max_workers) as ex:
@@ -211,7 +211,7 @@ def fetch_pois_parallel(city, keyword, api_key, max_pages=10, workers=4, page_si
             results.extend(f.result())
     return pd.DataFrame(results) if results else pd.DataFrame()
 
-def get_all_pois_parallel(city, keywords, api_key, max_pages=10, workers=4, page_size=25):
+def get_all_pois_parallel(city, keywords, api_key, max_pages=10, workers=3, page_size=25):
     all_dfs = []
     kws = keywords if isinstance(keywords, (list,tuple)) else [k.strip() for k in str(keywords).split(",") if k.strip()]
     max_kw_workers = min(len(kws), max(1, workers))
@@ -313,7 +313,7 @@ if st.session_state["algo"] == "KMeans聚类算法":
     st.write("正在并行抓取 POI 数据…")
     keyword_list = [k.strip() for k in keywords.split(",")]
     with st.spinner("多线程抓取 POI…"):
-        all_pois = get_all_pois_parallel(city, keyword_list, api_key, max_pages=min(15, max_pages), workers=4, page_size=25)
+        all_pois = get_all_pois_parallel(city, keyword_list, api_key, max_pages=min(15, max_pages), workers=3, page_size=25)
 
     if all_pois.empty:
         st.error("没有获取到任何 POI，请检查 API Key。")
@@ -547,3 +547,4 @@ if st.session_state["algo"] == "KMeans聚类算法":
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
+
