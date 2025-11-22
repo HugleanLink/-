@@ -13,136 +13,133 @@ import time
 
 # 页面基本设置
 st.set_page_config(page_title="城市物流无人机起降站选址系统", layout="wide")
+
+# ====================== 顶部导航栏 ======================
 st.markdown("""
 <style>
-
-body {
-    background-color: #f8fafc;
+.navbar {
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:60px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e2e8f0;
+    display:flex;
+    align-items:center;
+    padding:0 40px;
+    z-index:999;
 }
-.block-container {
-    padding-top: 1.2rem;
+.nav-title {
+    font-size:20px;
+    font-weight:700;
+    color:#4f46e5;
 }
-
-/* 卡片 */
-.card {
-    background: white;
-    padding: 1.5rem 2rem;
-    border-radius: 18px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    margin-bottom: 1.5rem;
+.nav-item {
+    margin-left:25px;
+    font-size:16px;
+    color:#475569;
+    cursor:pointer;
 }
-
-/* 标题 */
-.section-title {
-    font-size: 22px;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 12px;
+.nav-item:hover {
+    color:#1e293b;
+    font-weight:600;
 }
-
-/* 输入框 */
-input[type="text"], input[type="password"], textarea, select {
-    border-radius: 10px !important;
-    border: 1px solid #cbd5e1 !important;
-    padding: 10px 14px !important;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
-}
-
-.css-2b097c-container, .css-1wa3eu0-placeholder {
-    border-radius: 10px !important;
-}
-
-/* 按钮 */
-.stButton>button {
-    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
-    color: white !important;
-    padding: 0.7rem 1.5rem !important;
-    border-radius: 12px !important;
-    border: none !important;
-    font-size: 18px !important;
-    transition: 0.25s ease !important;
-    box-shadow: 0 4px 12px rgba(99,102,241,0.3);
-}
-
-.stButton>button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 22px rgba(99,102,241,0.35);
-}
-
-/* 标题动画 */
-@keyframes slideInTitle {
-    0% { opacity: 0; transform: translateX(-40px); }
-    100% { opacity: 1; transform: translateX(0); }
-}
-h1 {
-    animation: slideInTitle 1.0s ease-out;
-    font-weight: 800;
-    color: #1e293b;
-}
-
-/* 通知动画 */
-@keyframes msgPop {
-    0% { opacity: 0; transform: scale(0.97); }
-    100% { opacity: 1; transform: scale(1); }
-}
-div[data-testid="stNotification"] {
-    animation: msgPop 0.5s ease-out;
-}
-
-/* ================= 修复你的两个“多余留白” ================= */
-
-/* 修复说明文字下的空白：直接压掉 title 和 write 下的 margin */
-h1 + div, h1 + p, h1 + span {
-    margin-top: -15px !important;
-}
-
-/* expander 内容顶部的空白 */
-.streamlit-expanderContent {
-    padding-top: 5px !important;
-}
-
-/* expander 第一行再压一次 */
-.streamlit-expanderContent > div:first-child {
-    margin-top: -10px !important;
-}
-
 </style>
 
+<div class="navbar">
+    <span class="nav-title">无人机起降站选址系统</span>
+    <span class="nav-item">首页</span>
+    <span class="nav-item">选址分析</span>
+    <span class="nav-item">数据管理</span>
+</div>
+
+<br><br><br> <!-- 推内容下移，避免被导航栏挡住 -->
 """, unsafe_allow_html=True)
-# 顶部横幅
+
+
+# ====================== 顶部 Banner ======================
 def add_banner(image_path):
     with open(image_path, "rb") as f:
         data = base64.b64encode(f.read()).decode()
     st.markdown(
         f"""
-        <div style="width:100%; text-align:center; margin-top:-80px; margin-bottom:8px;">
+        <div style="width:100%; text-align:center; margin-top:-20px; margin-bottom:10px;">
             <img src="data:image/jpg;base64,{data}" style="width:100%; border-radius:18px;"/>
         </div>
         """,
         unsafe_allow_html=True
     )
+
 add_banner("微信图片_20251122175115_115_17.jpg")
-# 标题区域
-st.title("起降站选址系统")
-st.write("请输入城市名称和高德 API Key，然后点击“开始选址分析”。")
-st.markdown("<div style='margin-top:-10px'></div>", unsafe_allow_html=True)
-# 输入区域
-with st.container():
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    col1, col2 = st.columns([1, 1])
-    with col1:
-        st.markdown('<div class="section-title">📍 城市参数</div>', unsafe_allow_html=True)
-        city = st.text_input("城市名称（例如：武汉市）")
-        api_key = st.text_input("输入高德API Key", type="password")
-    with col2:
-        st.markdown('<div class="section-title">🧠 选址算法</div>', unsafe_allow_html=True)
-        SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
-        algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",
-                                   ["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"])
+
+
+# ====================== 首页主标题 ======================
+st.markdown("""
+<h1 style="margin-top:-10px; font-size:46px;">起降站选址系统</h1>
+<p style="font-size:18px; color:#475569; margin-top:-15px;">
+基于大规模 POI 数据分析、聚类算法、遗传算法，实现城市无人机起降站的自动化智能布局。
+</p>
+""", unsafe_allow_html=True)
+
+
+# ====================== 主体：左右布局 ======================
+left, right = st.columns([0.9, 1.1], gap="large")
+
+# ====================== 左侧：系统介绍 ======================
+with left:
+    st.markdown("""
+    <div style="padding:20px 25px; border-radius:16px; 
+                background:white; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+
+    <h3 style="color:#1e293b; font-weight:700;">🔍 系统简介</h3>
+    <p style="color:#475569; font-size:16px; line-height:1.6;">
+        本系统通过 <b>高德地图POI数据</b> + <b>KMeans聚类</b> +
+        <b>遗传算法(GA)</b>，自动计算城市内最优的无人机起降站布局。
+    </p>
+    
+    <h4 style="margin-top:20px; color:#334155;">📌 功能亮点</h4>
+    <ul style="color:#475569; line-height:1.7;">
+        <li>自动识别城市繁华区、生成服务半径</li>
+        <li>一级站、二级站智能布局</li>
+        <li>支持 GA / KMeans / 景区模式</li>
+        <li>支持下载地图和站点数据</li>
+    </ul>
+
+    <h4 style="margin-top:20px; color:#334155;">🚀 使用步骤</h4>
+    <ol style="color:#475569; line-height:1.7;">
+        <li>输入城市名称与 API Key</li>
+        <li>选择或自动决定算法</li>
+        <li>点击“开始选址分析”</li>
+        <li>查看地图并下载结果</li>
+    </ol>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ====================== 右侧：输入表单卡片 ======================
+with right:
+    st.markdown("""
+    <div class="card">
+        <h3 style="color:#1e293b; font-weight:700;">🧭 输入参数</h3>
+    """, unsafe_allow_html=True)
+
+    city = st.text_input("城市名称（例如：武汉市）")
+    api_key = st.text_input("输入高德API Key", type="password")
+
+    SPECIAL_GA_CITIES = ["西宁市", "拉萨市", "昆明市"]
+    algo_choice = st.selectbox("选择选址算法（若不选择，自动决定）",
+                               ["KMeans聚类算法", "遗传算法", "不选择", "景区建站算法"])
+
     st.markdown("</div>", unsafe_allow_html=True)
-# 高级配置
-with st.expander("高级配置（可选）"):
+
+
+# ====================== 高级配置卡片 ======================
+with st.expander("⚙ 高级配置（可选）"):
     st.markdown('<div class="card">', unsafe_allow_html=True)
+
     target_radius_km = st.text_input("指定中心繁华区半径", "8")
     num_clusters = st.text_input("中心繁华区个数", "1")
     num_primary_stations_per_circle = st.text_input("负责繁华区的一级站个数", "5")
@@ -150,12 +147,18 @@ with st.expander("高级配置（可选）"):
     preset_filter_radius_km = st.text_input("超过城市中心坐标多少公里不纳入考虑", "30")
     outer_buffer_km = st.text_input("二级站的覆盖环带宽度(千米)", "20")
     secondary_radius_km = st.text_input("二级站的最远辐射距离(千米)", "4")
+
     st.markdown("</div>", unsafe_allow_html=True)
-# 开始按钮
+
+
+
+# ====================== 开始按钮 ======================
+st.markdown("<br>", unsafe_allow_html=True)
 if st.button("开始选址分析"):
     if city.strip() == "":
         st.warning("请先输入城市名称。")
         st.stop()
+
     if algo_choice == "不选择":
         if any(c in city for c in SPECIAL_GA_CITIES):
             st.session_state["algo"] = "遗传算法"
@@ -167,9 +170,13 @@ if st.button("开始选址分析"):
             st.info(f"已为 {city} 自动选择：KMeans聚类算法")
     else:
         st.session_state["algo"] = algo_choice
+
     st.session_state["city"] = city
     st.session_state["api_key"] = api_key
     st.session_state["run_analysis"] = True
+
+# —— 这里开始仍然进入你原来的 “# 参数” 区域，不需要改 ——
+
 
 
     # 参数
@@ -480,44 +487,3 @@ if st.button("开始选址分析"):
     all_pois.to_csv(poi_buf, index=False, encoding="utf-8-sig")
     poi_buf.seek(0)
     st.download_button("下载POI数据 CSV", data=poi_buf.getvalue(),file_name=f"{city}_POI数据.csv", mime="text/csv")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
